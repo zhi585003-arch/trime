@@ -12,6 +12,7 @@ import android.view.View
 import androidx.lifecycle.lifecycleScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
+import androidx.recyclerview.widget.RecyclerView
 import com.osfans.trime.R
 import com.osfans.trime.data.db.ClipboardHelper
 import com.osfans.trime.data.db.CollectionHelper
@@ -55,20 +56,16 @@ class ClipboardWindow : BoardWindow.BarBoardWindow() {
 
     private val clipboardBeansAdapter by lazy {
         object : ClipboardAdapter(theme) {
+            override fun onInteraction() {
+                service.lifecycleScope.launch { ClipboardHelper.clearExpired() }
+            }
+
             override fun onPaste(bean: DatabaseBean) {
-                val text = bean.text ?: return
-                service.commitText(text)
-                if (clipboardReturnAfterPaste) {
-                    windowManager.attachWindow(KeyboardWindow)
+                service.lifecycleScope.launch {
+                    if (ClipboardHelper.paste(bean.id, service::commitText) && clipboardReturnAfterPaste) {
+                        windowManager.attachWindow(KeyboardWindow)
+                    }
                 }
-            }
-
-            override fun onPin(id: Int) {
-                service.lifecycleScope.launch { ClipboardHelper.pin(id) }
-            }
-
-            override fun onUnpin(id: Int) {
-                service.lifecycleScope.launch { ClipboardHelper.unpin(id) }
             }
 
             override fun onEdit(id: Int) {
@@ -77,7 +74,8 @@ class ClipboardWindow : BoardWindow.BarBoardWindow() {
 
             override fun onCollect(bean: DatabaseBean) {
                 service.lifecycleScope.launch {
-                    CollectionHelper.addNewBean(bean.text ?: "")
+                    val current = ClipboardHelper.get(bean.id) ?: return@launch
+                    CollectionHelper.addNewBean(current.text ?: "")
                 }
             }
 
@@ -116,6 +114,13 @@ class ClipboardWindow : BoardWindow.BarBoardWindow() {
             recyclerView.apply {
                 layoutManager = verticalLayoutManager()
                 adapter = clipboardBeansAdapter
+                addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                    override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                        if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
+                            service.lifecycleScope.launch { ClipboardHelper.clearExpired() }
+                        }
+                    }
+                })
             }
         }
     }
@@ -162,7 +167,7 @@ class ClipboardWindow : BoardWindow.BarBoardWindow() {
                 val currentItem = viewPager.currentItem
                 when (currentItem) {
                     0 -> promptDeleteAll {
-                        ClipboardHelper.deleteAll(ClipboardHelper.haveUnpinned())
+                        ClipboardHelper.deleteAll()
                     }
                     else -> promptDeleteAll {
                         CollectionHelper.deleteAll(CollectionHelper.haveUnpinned())
@@ -187,6 +192,7 @@ class ClipboardWindow : BoardWindow.BarBoardWindow() {
 
     override fun onAttached() {
         clipboardBeansSubmitJob = service.lifecycleScope.launch {
+            ClipboardHelper.clearExpired()
             clipboardBeansPager.flow.collect {
                 clipboardBeansAdapter.submitData(it)
             }

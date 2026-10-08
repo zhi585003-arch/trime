@@ -76,11 +76,13 @@ abstract class ClipboardAdapter(
     ) {
         val bean = getItem(position) ?: return
         with(holder.ui) {
-            setBean(excerptText(bean.text ?: ""), bean.pinned)
+            setBean(excerptText(bean.text ?: ""), false)
             root.setOnClickListener {
+                onInteraction()
                 onPaste(bean)
             }
             root.setOnLongClickListener {
+                onInteraction()
                 val popup = PopupMenu(ctx, it)
                 val menu = popup.menu
                 val iconTint = ctx.styledColor(android.R.attr.colorControlNormal)
@@ -91,15 +93,6 @@ abstract class ClipboardAdapter(
                 if (enableCollection) {
                     menu.item(R.string.collect, R.drawable.ic_baseline_star_24, iconTint) {
                         onCollect(bean)
-                    }
-                    if (bean.pinned) {
-                        menu.item(R.string.simple_key_unpin, R.drawable.ic_outline_push_pin_24, iconTint) {
-                            onUnpin(bean.id)
-                        }
-                    } else {
-                        menu.item(R.string.simple_key_pin, R.drawable.ic_baseline_push_pin_24, iconTint) {
-                            onPin(bean.id)
-                        }
                     }
                 }
                 menu.item(R.string.delete, R.drawable.ic_baseline_delete_24, iconTint) {
@@ -118,6 +111,8 @@ abstract class ClipboardAdapter(
             }
         }
     }
+
+    open fun onInteraction() {}
 
     abstract fun onPaste(bean: DatabaseBean)
 

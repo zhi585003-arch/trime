@@ -79,7 +79,7 @@ class UserDictionaryFragment : Fragment() {
             }
         }.apply {
             fab.setOnClickListener {
-                restoreLauncher.launch("text/plain")
+                restoreLauncher.launch("*/*")
             }
         }
     }
@@ -135,7 +135,8 @@ class UserDictionaryFragment : Fragment() {
             try {
                 val inputStream = cr.openInputStream(uri)!!
                 if (merge) {
-                    val result = UserDictManager.restoreUserDict(inputStream, fileName)
+                    val result = inputStream.use { UserDictManager.restoreUserDict(it, fileName) }
+                    result.getOrThrow()
                     if (result.isSuccess) {
                         ui.showSnackBar(ctx.getString(R.string.restored_from_x, fileName))
                         ContextCompat.getMainExecutor(requireContext()).execute {

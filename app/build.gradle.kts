@@ -25,11 +25,11 @@ android {
     buildToolsVersion = "35.0.0"
 
     defaultConfig {
-        applicationId = "com.osfans.trime"
+        applicationId = "com.osfans.trime.offline"
         minSdk = 21
         targetSdk = 35
         versionCode = 20260301
-        versionName = "3.3.9"
+        versionName = "3.3.9-offline.1"
 
         multiDexEnabled = true
         buildConfigField("String", "BUILDER", "\"${project.builder}\"")
@@ -67,7 +67,7 @@ android {
         debug {
             applicationIdSuffix = ".debug"
 
-            resValue("string", "trime_app_name", "@string/app_name_debug")
+            resValue("string", "trime_app_name", "同文离线雾凇")
         }
         all {
             // remove META-INF/version-control-info.textproto

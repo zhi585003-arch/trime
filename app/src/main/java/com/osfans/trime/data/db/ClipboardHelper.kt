@@ -22,6 +22,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withContext
 import splitties.systemservices.clipboardManager
 import timber.log.Timber
 
@@ -67,13 +68,6 @@ object ClipboardHelper :
         }
     }
 
-    private val limitPref = clipPref.clipboardLimit
-
-    @Keep
-    private val limitListener = PreferenceDelegate.OnChangeListener<Int> { _, _ ->
-        launch { removeOutdated() }
-    }
-
     private val compareRules: Set<Regex> by lazy {
         val rules by clipPref.clipboardCompareRules
         rules
@@ -107,42 +101,66 @@ object ClipboardHelper :
         clbDao = clbDb.databaseDao()
         enabledListener.onChange(enabledPref.key, enabledPref.getValue())
         enabledPref.registerOnChangeListener(enabledListener)
-        limitListener.onChange(limitPref.key, limitPref.getValue())
-        limitPref.registerOnChangeListener(limitListener)
-        launch { updateItemCount() }
+        launch { clearExpired() }
     }
 
-    suspend fun get(id: Int) = clbDao.get(id)
+    // All clipboard mutations share a lock; collection.db keeps its original behavior.
+    private const val RETENTION_MILLIS = 24L * 60 * 60 * 1000
 
-    suspend fun haveUnpinned() = clbDao.haveUnpinned()
-
-    fun allBeans() = clbDao.allBeans()
-
-    suspend fun pin(id: Int) = clbDao.updatePinned(id, true)
-
-    suspend fun unpin(id: Int) = clbDao.updatePinned(id, false)
-
-    suspend fun updateText(
-        id: Int,
-        text: String,
-    ) {
-        lastBean?.let {
-            if (id == it.id) updateLastBean(it.copy(text = text))
+    private suspend fun removeExpiredLocked(now: Long = System.currentTimeMillis()) {
+        clbDao.deleteExpired(now - RETENTION_MILLIS)
+        if (lastBean?.let { it.time <= now - RETENTION_MILLIS } == true) {
+            lastBean = null
         }
-        clbDao.updateText(id, text)
-    }
-
-    suspend fun delete(id: Int) {
-        clbDao.delete(id)
         updateItemCount()
     }
 
-    suspend fun deleteAll(skipUnpinned: Boolean = true) {
-        if (skipUnpinned) {
-            clbDao.deleteAllUnpinned()
+    suspend fun clearExpired() = mutex.withLock { removeExpiredLocked() }
+
+    suspend fun get(id: Int): DatabaseBean? = mutex.withLock {
+        removeExpiredLocked()
+        clbDao.get(id)
+    }
+
+    fun allBeans() = clbDao.clipboardBeans()
+
+    // Read the current row, not a possibly expired/stale UI snapshot. Only a successful
+    // paste renews retention. Copy notifications never update an existing row's time.
+    suspend fun paste(id: Int, commit: (String) -> Boolean): Boolean = mutex.withLock {
+        removeExpiredLocked()
+        val bean = clbDao.get(id) ?: return@withLock false
+        val text = bean.text ?: return@withLock false
+        if (!withContext(Dispatchers.Main.immediate) { commit(text) }) return@withLock false
+        val now = System.currentTimeMillis()
+        clbDao.updateTime(id, now)
+        lastBean = bean.copy(time = now)
+        true
+    }
+
+    suspend fun updateText(id: Int, text: String) = mutex.withLock {
+        removeExpiredLocked()
+        val bean = clbDao.get(id) ?: return@withLock
+        val duplicate = clbDao.find(text)
+        if (duplicate != null && duplicate.id != id) {
+            clbDao.delete(id)
+            if (lastBean?.id == id) lastBean = duplicate
         } else {
-            clbDao.deleteAll()
+            clbDao.updateText(id, text)
+            if (lastBean?.id == id) lastBean = bean.copy(text = text)
         }
+        updateItemCount()
+    }
+
+    suspend fun delete(id: Int) = mutex.withLock {
+        removeExpiredLocked()
+        clbDao.delete(id)
+        if (lastBean?.id == id) lastBean = null
+        updateItemCount()
+    }
+
+    suspend fun deleteAll() = mutex.withLock {
+        clbDao.deleteAll()
+        lastBean = null
         updateItemCount()
     }
 
@@ -172,6 +190,7 @@ object ClipboardHelper :
         }
         launch {
             mutex.withLock {
+                removeExpiredLocked()
                 val bean = DatabaseBean.fromClipData(clip) ?: return@withLock
                 if (bean.text.isNullOrBlank()) return@withLock
                 if (bean.text.matchesAny(outputRules) ||
@@ -181,14 +200,13 @@ object ClipboardHelper :
                 }
                 try {
                     clbDao.find(bean.text)?.let {
-                        updateLastBean(it.copy(time = bean.time))
-                        clbDao.updateTime(it.id, bean.time)
+                        updateLastBean(it)
                         return@withLock
                     }
                     val insertedBean =
                         clbDb.withTransaction {
                             val rowId = clbDao.insert(bean)
-                            removeOutdated()
+                            removeExpiredLocked()
                             updateItemCount()
                             clbDao.get(rowId) ?: bean
                         }
@@ -196,21 +214,9 @@ object ClipboardHelper :
                     updateItemCount()
                 } catch (exception: Exception) {
                     Timber.w("Failed to update clipboard database: $exception")
-                    updateLastBean(bean)
+                    // Do not expose an unsaved row as a pasteable history entry.
                 }
             }
-        }
-    }
-
-    private suspend fun removeOutdated() {
-        val limit = limitPref.getValue()
-        val unpinned = clbDao.getAllUnpinned()
-        if (unpinned.size > limit) {
-            val outdated =
-                unpinned
-                    .sortedBy { it.id }
-                    .getOrNull(unpinned.size - limit)
-            clbDao.deletedUnpinnedEarlierThan(outdated?.time ?: System.currentTimeMillis())
         }
     }
 }

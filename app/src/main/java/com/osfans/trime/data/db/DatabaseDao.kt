@@ -59,6 +59,12 @@ interface DatabaseDao {
     @Query("DELETE FROM ${DatabaseBean.TABLE_NAME} WHERE time<:timestamp AND pinned=0")
     suspend fun deletedUnpinnedEarlierThan(timestamp: Long)
 
+    @Query("DELETE FROM ${DatabaseBean.TABLE_NAME} WHERE time<=:cutoff")
+    suspend fun deleteExpired(cutoff: Long)
+
+    @Query("SELECT * FROM ${DatabaseBean.TABLE_NAME} ORDER BY time DESC, id DESC")
+    fun clipboardBeans(): PagingSource<Int, DatabaseBean>
+
     @Query("SELECT * FROM ${DatabaseBean.TABLE_NAME} ORDER BY pinned DESC, time DESC")
     fun allBeans(): PagingSource<Int, DatabaseBean>
 

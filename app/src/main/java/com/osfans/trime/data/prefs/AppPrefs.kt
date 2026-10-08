@@ -381,11 +381,6 @@ class AppPrefs(
             const val CLIPBOARD_RETURN_AFTER_PASTE = "clipboard_return_after_paste"
         }
         val clipboardListening = switch(R.string.clipboard_listening, CLIPBOARD_LISTENING, true)
-        val clipboardLimit = int(
-            R.string.clipboard_limit,
-            CLIPBOARD_LIMIT,
-            10,
-        ) { clipboardListening.getValue() }
         val clipboardCompareRules = editText(
             R.string.clipboard_compare_rules,
             CLIPBOARD_COMPARE_RULES,

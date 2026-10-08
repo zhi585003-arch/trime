@@ -1,104 +1,102 @@
-# SPDX-FileCopyrightText: 2015 - 2024 Rime community
-#
-# SPDX-License-Identifier: GPL-3.0-or-later
+name: Build Trime Offline ARM64
 
-name: Commit
-on: [push]
+on:
+  workflow_dispatch:
+  push:
+    branches: [offline-custom]
 
-env:
-  CI_NAME: Commit CI
+permissions:
+  contents: read
+
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os:
-          - ubuntu-24.04
-          - macos-15
-          - windows-2025
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
     env:
-      BUILD_ABI: armeabi-v7a,arm64-v8a,x86,x86_64
+      CI_NAME: Personal Offline Build
+      BUILD_ABI: arm64-v8a
     steps:
-      - name: Fetch source code
+      - name: Checkout customized Trime
         uses: actions/checkout@v6
         with:
           submodules: recursive
           fetch-depth: 0
 
-      - name: Get branch name
-        id: vars
-        shell: bash
-        run: |
-          echo ${GITHUB_REF#refs/*/}
-          echo CI_BRANCH=${GITHUB_REF#refs/*/} >> $GITHUB_ENV
+      - name: Checkout pinned Rime Ice
+        uses: actions/checkout@v6
+        with:
+          repository: iDvel/rime-ice
+          ref: da1fbe602e38f26db846fa10120ee64c2b0324c0
+          path: .rime-ice
+          persist-credentials: false
 
-      - name: Setup Java
+      - name: Bundle offline dictionaries
+        run: python3 script/prepare-offline-data.py .rime-ice
+
+      - name: Check clipboard database rules
+        run: python3 script/test-offline-clipboard.py
+
+      - name: Setup Java 17
         uses: actions/setup-java@v5
         with:
-          distribution: "temurin"
-          java-version: 17
-          # will restore cache of dependencies and wrappers
-          cache: 'gradle'
+          distribution: temurin
+          java-version: "17"
+          cache: gradle
+
+      - name: Preserve personal debug signing key
+        uses: actions/cache@v5
+        with:
+          path: ~/.android/debug.keystore
+          key: trime-offline-debug-signing-v1
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
-
-      - name: Install Android NDK
-        run: |
-          sdkmanager --install "cmake;3.31.6"
-
-      - name: Calculate JNI cache hash
-        id: cache-hash
-        run: |
-            ./gradlew :app:calculateNativeCacheHash
-
-      - name: Fetch JNI cache
-        uses: actions/cache@v5
-        id: jni-cache
         with:
-          path: "app/prebuilt"
-          key: ${{ matrix.os }}-trime-jni-debug-${{ steps.cache-hash.outputs.native-cache-hash }}
+          packages: platform-tools
 
-      - name: Fetch submodules
-        if: ${{ !steps.jni-cache.outputs.cache-hit }}
+      - name: Install build tools
         run: |
-          git submodule update --init --recursive
-        
-      - name: Check code style
-        if: ${{ startsWith(matrix.os, 'ubuntu') }}
-        run: |
-          make style-lint
+          sdkmanager --install \
+            "platforms;android-35" \
+            "build-tools;35.0.0" \
+            "ndk;28.0.13004108" \
+            "cmake;3.31.6"
 
-      - name: Build debug Trime
-        run: |
-          make debug
+      - name: Apply upstream Lua patch
+        run: make patch-apply
 
-      - name: Add JNI cache
-        if: ${{ !steps.jni-cache.outputs.cache-hit }}
+      - name: Build APK
         shell: bash
-        run: cp -R app/build/intermediates/merged_native_libs/debug/mergeDebugNativeLibs/out/lib app/prebuilt
+        run: |
+          chmod +x gradlew
+          ./gradlew :app:assembleDebug \
+            -PbuildABI=arm64-v8a \
+            --max-workers=4 --console=plain --stacktrace 2>&1 | tee build.log
 
-      - name: Upload APK artifact
+      - name: Verify offline APK and bundled data
+        shell: bash
+        run: |
+          python3 script/verify-offline-apk.py
+
+      - name: Upload APK
         uses: actions/upload-artifact@v6
         with:
-          name: trime-${{ matrix.os }}
-          path: app/build/outputs/apk/debug/
-          # keep 90 days
-          retention-days: 90
+          name: trime-v3.3.9-offline-arm64
+          path: |
+            app/build/outputs/apk/debug/*.apk
+            offline/使用说明.md
+            apk-verification.txt
+          if-no-files-found: error
+          retention-days: 14
 
-      - name: Upload APK artifact (ARM64_V8A only)
+      - name: Upload build logs
+        if: always()
         uses: actions/upload-artifact@v6
         with:
-          name: trime-arm64-v8a-${{ matrix.os }}
-          path: app/build/outputs/apk/debug/*arm64-v8a-*.apk
-          # keep 90 days
-          retention-days: 90
-
-      - name: Upload JNI artifact (librime_jni.so)
-        uses: actions/upload-artifact@v6
-        with:
-          name: librime_jni-${{ matrix.os }}
-          path: app/build/intermediates/merged_native_libs/debug/mergeDebugNativeLibs/out/lib/*
-          # keep 90 days
-          retention-days: 90
+          name: offline-build-logs
+          path: |
+            build.log
+            apk-verification.txt
+            app/build/intermediates/cxx/**/logs/**
+          if-no-files-found: ignore
+          retention-days: 14
