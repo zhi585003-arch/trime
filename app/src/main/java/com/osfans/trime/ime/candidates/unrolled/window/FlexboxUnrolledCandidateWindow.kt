@@ -35,10 +35,9 @@ class FlexboxUnrolledCandidateWindow : BaseUnrolledCandidateWindow() {
                     minimumWidth = dp(40)
                     val size = theme.generalStyle.candidatePadding
                     setPaddingDp(size, 0, size, 0)
-                    layoutParams =
-                        FlexboxLayoutManager
-                            .LayoutParams(wrapContent, dp(theme.generalStyle.run { candidateViewHeight + commentHeight }))
-                            .apply { flexGrow = 1f }
+                    layoutParams = androidx.recyclerview.widget.RecyclerView.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, dp(64),
+                    )
                 }
             }
 
@@ -53,17 +52,14 @@ class FlexboxUnrolledCandidateWindow : BaseUnrolledCandidateWindow() {
     }
 
     override val layoutManager by lazy {
-        FlexboxLayoutManager(context).apply {
-            justifyContent = JustifyContent.SPACE_AROUND
-            alignItems = AlignItems.FLEX_START
-        }
+        androidx.recyclerview.widget.GridLayoutManager(context, 4)
     }
 
     override fun onCreateCandidateLayout(): UnrolledCandidateLayout = UnrolledCandidateLayout(context, theme).apply {
         recyclerView.apply {
             adapter = this@FlexboxUnrolledCandidateWindow.adapter
             layoutManager = this@FlexboxUnrolledCandidateWindow.layoutManager
-            addItemDecoration(FlexboxHorizontalDecoration(separatorDrawable))
+
         }
     }
 }

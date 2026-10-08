@@ -90,6 +90,7 @@ open class TrimeInputMethodService : LifecycleInputMethodService() {
     private var lastCommittedText: String = ""
 
     private var composingText: String = ""
+    private var offlineLayoutSignature = ""
 
     private var cursorUpdateIndex = 0
 
@@ -142,6 +143,7 @@ open class TrimeInputMethodService : LifecycleInputMethodService() {
 
     private suspend fun updateRimeOption(api: RimeApi) {
         try {
+            api.setRuntimeOption("_no_learning", !com.osfans.trime.offline.OfflinePrefs.learning)
             api.setRuntimeOption("soft_cursor", prefs.keyboard.useSoftCursor.getValue()) // 軟光標
         } catch (e: Exception) {
             Timber.e(e)
@@ -531,6 +533,11 @@ open class TrimeInputMethodService : LifecycleInputMethodService() {
         restarting: Boolean,
     ) {
         Timber.d("onStartInputView: restarting=$restarting")
+        val signature = com.osfans.trime.offline.OfflinePrefs.run { "$height/$width/$position/$bottom/$textScale" }
+        if (signature != offlineLayoutSignature) {
+            offlineLayoutSignature = signature
+            replaceInputViews(ThemeManager.activeTheme)
+        }
         InputFeedbackManager.startInput()
         postRimeJob {
             updateRimeOption(this)

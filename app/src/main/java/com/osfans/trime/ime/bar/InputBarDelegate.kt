@@ -81,7 +81,7 @@ class InputBarDelegate : InputBroadcastReceiver {
 
     @Keep
     private val onClipboardUpdateListener = ClipboardHelper.OnClipboardUpdateListener {
-        if (!clipboardSuggestion) return@OnClipboardUpdateListener
+        // Explicit clipboard previews remain available even with automatic suggestions disabled.
         service.lifecycleScope.launch {
             if (it.text.isNullOrEmpty()) {
                 isClipboardFresh = false
@@ -91,11 +91,13 @@ class InputBarDelegate : InputBroadcastReceiver {
                 launchClipboardTimeoutJob()
             }
             evalAlwaysUiState()
+            if (ClipboardHelper.pendingPreviewId != null) view.displayedChild = QuickBarStateMachine.State.Always.ordinal
         }
     }
 
     private fun launchClipboardTimeoutJob() {
         clipboardTimeoutJob?.cancel()
+        if (ClipboardHelper.pendingPreviewId != null) return
         val timeout = clipboardSuggestionTimeout * 1000L
         if (timeout < 0L) return
         clipboardTimeoutJob = service.lifecycleScope.launch {
@@ -139,7 +141,9 @@ class InputBarDelegate : InputBroadcastReceiver {
                 setOnClickListener {
                     val id = ClipboardHelper.lastBean?.id
                     if (id != null) {
-                        service.lifecycleScope.launch { ClipboardHelper.paste(id, service::commitText) }
+                        service.lifecycleScope.launch {
+                            if (ClipboardHelper.paste(id, service::commitText)) service.postRimeJob { clearComposition() }
+                        }
                     }
                     clipboardTimeoutJob?.cancel()
                     clipboardTimeoutJob = null
@@ -219,6 +223,10 @@ class InputBarDelegate : InputBroadcastReceiver {
     }
 
     override fun onCandidateListUpdate(data: RimeMessage.CandidateListMessage.Data) {
+        if (data.candidates.isNotEmpty() && ClipboardHelper.pendingPreviewId != null) {
+            ClipboardHelper.pendingPreviewId = null
+            if (view.displayedChild != QuickBarStateMachine.State.Tab.ordinal) view.displayedChild = QuickBarStateMachine.State.Candidate.ordinal
+        }
         barStateMachine.push(
             QuickBarStateMachine.TransitionEvent.CandidatesUpdated,
             QuickBarStateMachine.BooleanKey.CandidateEmpty to data.candidates.isEmpty(),
@@ -226,7 +234,9 @@ class InputBarDelegate : InputBroadcastReceiver {
     }
 
     private fun switchUiByState(state: QuickBarStateMachine.State) {
-        val index = state.ordinal
+        val index = if (ClipboardHelper.pendingPreviewId != null && state != QuickBarStateMachine.State.Tab) {
+            QuickBarStateMachine.State.Always.ordinal
+        } else state.ordinal
         if (view.displayedChild == index) return
         val new = view.getChildAt(index)
         if (new != tabUi.root) {

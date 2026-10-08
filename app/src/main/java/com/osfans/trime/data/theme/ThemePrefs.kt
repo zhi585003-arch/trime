@@ -74,4 +74,3 @@ class ThemePrefs(
         const val NAVBAR_BACKGROUND = "navbar_background"
     }
 }
-

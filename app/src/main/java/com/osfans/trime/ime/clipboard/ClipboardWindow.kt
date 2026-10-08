@@ -62,7 +62,7 @@ class ClipboardWindow : BoardWindow.BarBoardWindow() {
 
             override fun onPaste(bean: DatabaseBean) {
                 service.lifecycleScope.launch {
-                    if (ClipboardHelper.paste(bean.id, service::commitText) && clipboardReturnAfterPaste) {
+                    if (ClipboardHelper.preview(bean.id)) {
                         windowManager.attachWindow(KeyboardWindow)
                     }
                 }

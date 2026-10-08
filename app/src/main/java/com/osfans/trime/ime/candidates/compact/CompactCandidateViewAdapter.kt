@@ -23,7 +23,7 @@ open class CompactCandidateViewAdapter(
     val theme: Theme,
 ) : BaseQuickAdapter<CandidateItem, CandidateViewHolder>() {
     init {
-        setHasStableIds(true)
+        setHasStableIds(false)
     }
 
     override fun getItemId(position: Int): Long = items.getOrNull(position).hashCode().toLong()
@@ -65,7 +65,7 @@ open class CompactCandidateViewAdapter(
             minimumWidth = dp(40)
             val size = theme.generalStyle.candidatePadding
             setPaddingDp(size, 0, size, 0)
-            layoutParams = FlexboxLayoutManager.LayoutParams(wrapContent, matchParent)
+            layoutParams = androidx.recyclerview.widget.RecyclerView.LayoutParams(wrapContent, matchParent)
         }
         return CandidateViewHolder(ui)
     }
@@ -81,9 +81,6 @@ open class CompactCandidateViewAdapter(
         holder.text = item.text
         holder.comment = item.comment
         holder.idx = position // unused
-        holder.ui.root.updateLayoutParams<FlexboxLayoutManager.LayoutParams> {
-            minWidth = this@CompactCandidateViewAdapter.layoutMinWidth
-            flexGrow = this@CompactCandidateViewAdapter.layoutFlexGrow
-        }
+
     }
 }

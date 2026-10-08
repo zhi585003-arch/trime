@@ -202,7 +202,7 @@ class AppPrefs(
             "",
         ) { soundOnKeyPress.getValue() && useCustomSoundEffect.getValue() }
 
-        val vibrateOnKeyPress = switch(R.string.vibrate_on_key_press, VIBRATE_ON_KEY_PRESS, false)
+        val vibrateOnKeyPress = switch(R.string.vibrate_on_key_press, VIBRATE_ON_KEY_PRESS, true)
         val vibrateOnKeyRelease = switch(
             R.string.vibrate_on_key_release,
             VIBRATE_ON_KEY_RELEASE,
@@ -218,7 +218,7 @@ class AppPrefs(
         val vibrationDuration = int(
             R.string.vibration_duration,
             VIBRATION_DURATION,
-            0,
+            15,
             0,
             100,
             "ms",

@@ -408,7 +408,7 @@ class KeyboardView(
         if (keyLabel.isEmpty()) return
 
         if (keyLabel.isIconFont) {
-            val size = if (key.keyTextSize > 0) sp(key.keyTextSize) else sp(if (keyLabel.length > 1) labelTextSize else keyTextSize)
+            val size = (if (key.keyTextSize > 0) sp(key.keyTextSize) else sp(if (keyLabel.length > 1) labelTextSize else keyTextSize)) * com.osfans.trime.offline.OfflinePrefs.textScale
             drawIconLabel(key, keyLabel, canvas, size, centered = true)
         } else {
             drawTextLabel(key, keyLabel, canvas, paint)
@@ -447,7 +447,7 @@ class KeyboardView(
         paint: Paint,
     ) {
         paint.typeface = FontManager.getTypeface("key_font")
-        paint.textSize = if (key.keyTextSize > 0) sp(key.keyTextSize) else sp(if (label.length > 1) labelTextSize else keyTextSize)
+        paint.textSize = (if (key.keyTextSize > 0) sp(key.keyTextSize) else sp(if (label.length > 1) labelTextSize else keyTextSize)) * com.osfans.trime.offline.OfflinePrefs.textScale
         paint.color = key.getTextColor()
 
         val centerX = key.width * 0.5f

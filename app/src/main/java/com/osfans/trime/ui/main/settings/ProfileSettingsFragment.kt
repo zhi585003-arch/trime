@@ -103,11 +103,12 @@ class ProfileSettingsFragment : PaddingPreferenceFragment() {
                 addPreference(
                     Preference(requireContext()).apply {
                         key = AppPrefs.Profile.USER_DATA_DIR
+                        isEnabled = false
                         isIconSpaceReserved = false
                         setTitle(R.string.user_data_dir)
                         setDefaultValue(DataManager.defaultDataDir.absolutePath)
                         summaryProvider = Preference.SummaryProvider<Preference> {
-                            prefs.userDataDir.getValue()
+                            "应用私有目录；导入导出请使用离线定制设置"
                         }
                         setOnPreferenceClickListener {
                             val dirNameText = ctx.editText {

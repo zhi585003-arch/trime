@@ -84,6 +84,7 @@ object ClipboardHelper :
             .toSet()
     }
 
+    var pendingPreviewId: Int? = null
     var lastBean: DatabaseBean? = null
 
     private fun updateLastBean(bean: DatabaseBean) {
@@ -111,6 +112,7 @@ object ClipboardHelper :
         clbDao.deleteExpired(now - RETENTION_MILLIS)
         if (lastBean?.let { it.time <= now - RETENTION_MILLIS } == true) {
             lastBean = null
+            pendingPreviewId = null
         }
         updateItemCount()
     }
@@ -120,6 +122,14 @@ object ClipboardHelper :
     suspend fun get(id: Int): DatabaseBean? = mutex.withLock {
         removeExpiredLocked()
         clbDao.get(id)
+    }
+
+    suspend fun preview(id: Int): Boolean = mutex.withLock {
+        removeExpiredLocked()
+        val bean = clbDao.get(id) ?: return@withLock false
+        pendingPreviewId = id
+        updateLastBean(bean)
+        true
     }
 
     fun allBeans() = clbDao.clipboardBeans()
@@ -133,6 +143,7 @@ object ClipboardHelper :
         if (!withContext(Dispatchers.Main.immediate) { commit(text) }) return@withLock false
         val now = System.currentTimeMillis()
         clbDao.updateTime(id, now)
+        pendingPreviewId = null
         lastBean = bean.copy(time = now)
         true
     }
@@ -161,6 +172,7 @@ object ClipboardHelper :
     suspend fun deleteAll() = mutex.withLock {
         clbDao.deleteAll()
         lastBean = null
+        pendingPreviewId = null
         updateItemCount()
     }
 

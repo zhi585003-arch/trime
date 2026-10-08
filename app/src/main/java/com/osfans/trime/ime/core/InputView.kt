@@ -223,9 +223,14 @@ class InputView(
 
     private fun updateKeyboardSize() {
         bottomPaddingSpace.updateLayoutParams {
-            height = keyboardBottomPaddingPx
+            height = keyboardBottomPaddingPx + dp(com.osfans.trime.offline.OfflinePrefs.bottom)
         }
-        val sidePadding = keyboardSidePaddingPx
+        val basePadding = keyboardSidePaddingPx
+        val available = resources.displayMetrics.widthPixels - 2 * basePadding
+        val extra = available * (100 - com.osfans.trime.offline.OfflinePrefs.width) / 100
+        val left = basePadding + extra * com.osfans.trime.offline.OfflinePrefs.position / 100
+        val right = basePadding + extra - (left - basePadding)
+        val sidePadding = maxOf(left, right)
         val unset = LayoutParams.UNSET
         if (sidePadding == 0) {
             // hide side padding space views when unnecessary
@@ -241,10 +246,10 @@ class InputView(
             leftPaddingSpace.visibility = View.VISIBLE
             rightPaddingSpace.visibility = View.VISIBLE
             leftPaddingSpace.updateLayoutParams {
-                width = sidePadding
+                width = left
             }
             rightPaddingSpace.updateLayoutParams {
-                width = sidePadding
+                width = right
             }
             windowManager.view.updateLayoutParams<LayoutParams> {
                 startToStart = unset
@@ -253,7 +258,7 @@ class InputView(
                 endToStartOf(rightPaddingSpace)
             }
         }
-        inputBar.view.setPadding(sidePadding, 0, sidePadding, 0)
+        inputBar.view.setPadding(left, 0, right, 0)
     }
 
     override fun onApplyWindowInsets(insets: WindowInsets): WindowInsets {

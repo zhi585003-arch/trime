@@ -41,7 +41,8 @@ object InputFeedbackManager {
 
     fun init(context: Context) {
         try {
-            tts = TextToSpeech(context, null)
+            // No external text-to-speech service receives typed text in this build.
+            tts = null
             soundPool =
                 SoundPool.Builder()
                     .setMaxStreams(3)

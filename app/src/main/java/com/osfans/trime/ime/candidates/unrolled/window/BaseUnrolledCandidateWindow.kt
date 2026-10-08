@@ -70,6 +70,16 @@ abstract class BaseUnrolledCandidateWindow :
                     itemAnimator = null
                 }
             }
+        candidateLayout.onSyllable = { length ->
+            service.lifecycleScope.launch {
+                val raw = rime.runOnReady { rawInput() }
+                val pending = pendingPinyin(rime.run { compositionCached })
+                if (pending.isNotEmpty() && raw.endsWith(pending)) {
+                    rime.runOnReady { moveCursorPos(raw.length - pending.length + length) }
+                }
+            }
+        }
+        candidateLayout.onReturn = { windowManager.attachWindow(KeyboardWindow) }
         return candidateLayout
     }
 
@@ -98,6 +108,7 @@ abstract class BaseUnrolledCandidateWindow :
 
     override fun onAttached() {
         lifecycleCoroutineScope = candidateLayout.findViewTreeLifecycleOwner()!!.lifecycleScope
+        showSyllables(rime.run { compositionCached })
         bar.unrollButtonStateMachine.push(UnrollButtonStateMachine.TransitionEvent.UnrolledCandidatesAttached)
         offsetJob =
             lifecycleCoroutineScope.launch {
@@ -107,7 +118,7 @@ abstract class BaseUnrolledCandidateWindow :
                     } else {
                         candidateLayout.resetPosition()
                         adapter.refreshWith(
-                            offset = it,
+                            offset = 0,
                             highlightedIndex = compactCandidate.adapter.highlightedIdx,
                         )
                     }
@@ -131,6 +142,21 @@ abstract class BaseUnrolledCandidateWindow :
                 true
             }
         }
+    }
+
+    private fun pendingPinyin(data: com.osfans.trime.core.CompositionProto): String =
+        Regex("[a-zA-Züv' ]+$").find(data.preedit.orEmpty())?.value?.replace(" ", "")?.lowercase().orEmpty()
+
+    private val syllables by lazy {
+        service.assets.open("pinyin-syllables.txt").bufferedReader().use { it.readLines().toSet() }
+    }
+    private fun showSyllables(data: com.osfans.trime.core.CompositionProto) {
+        val pending = pendingPinyin(data).substringBefore("'")
+        val choices = (1..pending.length).map { pending.take(it) }.filter { it in syllables }
+        candidateLayout.setSyllables(choices.ifEmpty { listOfNotNull(pending.takeIf { it.isNotBlank() }) })
+    }
+    override fun onCompositionUpdate(data: com.osfans.trime.core.CompositionProto) {
+        showSyllables(data)
     }
 
     override fun onDetached() {

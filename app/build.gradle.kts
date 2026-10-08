@@ -28,8 +28,8 @@ android {
         applicationId = "com.osfans.trime.offline"
         minSdk = 21
         targetSdk = 35
-        versionCode = 20260301
-        versionName = "3.3.9-offline.1"
+        versionCode = 20260302
+        versionName = "3.3.9-offline.2"
 
         multiDexEnabled = true
         buildConfigField("String", "BUILDER", "\"${project.builder}\"")

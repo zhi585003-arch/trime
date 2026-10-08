@@ -53,10 +53,10 @@ object DataManager {
 
     val defaultDataDir = File(Environment.getExternalStorageDirectory(), "rime-offline")
 
-    val sharedDataDir = File(appContext.getExternalFilesDir(null), "shared").also { it.mkdirs() }
+    val sharedDataDir get() = com.osfans.trime.offline.PrivateData.sharedDir
 
     val userDataDir
-        get() = File(prefs.profile.userDataDir.getValue()).also { it.mkdirs() }
+        get() = com.osfans.trime.offline.PrivateData.userDir
 
     val prebuiltDataDir = File(sharedDataDir, "build")
     val stagingDir get() = File(userDataDir, "build")
@@ -79,7 +79,8 @@ object DataManager {
     }
 
     fun sync() = lock.withLock {
-        val oldChecksumsFile = File(dataDir, DATA_CHECKSUMS_NAME)
+        com.osfans.trime.offline.PrivateData.prepare()
+        val oldChecksumsFile = File(com.osfans.trime.offline.PrivateData.metadata, DATA_CHECKSUMS_NAME)
         val oldChecksums =
             oldChecksumsFile
                 .runCatching { deserializeDataChecksums(bufferedReader().use { it.readText() }) }
@@ -102,7 +103,7 @@ object DataManager {
             }
         }
 
-        ResourceUtils.copyFile(DATA_CHECKSUMS_NAME, dataDir.resolve(DATA_CHECKSUMS_NAME).absolutePath)
+        ResourceUtils.copyFile(DATA_CHECKSUMS_NAME, oldChecksumsFile.absolutePath)
 
         val custom = userDataDir.resolve(DEFAULT_CUSTOM_FILE_NAME)
         if (!custom.exists()) {

@@ -139,6 +139,8 @@ class Rime :
         changeRimeCandidatePage(backward).also { emitResponse() }
     }
 
+    override suspend fun rawInput(): String = withRimeContext { getRimeRawInput() }
+
     override suspend fun moveCursorPos(position: Int) = withRimeContext {
         setRimeCaretPos(position)
         emitResponse()
@@ -154,7 +156,9 @@ class Rime :
 
     override suspend fun selectedSchemaId(): String = withRimeContext { getCurrentRimeSchema() }
 
-    override suspend fun selectSchema(schemaId: String) = withRimeContext { selectRimeSchema(schemaId) }
+    override suspend fun selectSchema(schemaId: String) = withRimeContext {
+        selectRimeSchema(schemaId).also { setRimeOption("_no_learning", !com.osfans.trime.offline.OfflinePrefs.learning) }
+    }
 
     override suspend fun currentSchema(): RimeSchema = withRimeContext {
         RimeSchema(getCurrentRimeSchema())
@@ -198,6 +202,7 @@ class Rime :
             """.trimIndent(),
         )
         startupRime(sharedDataDir, userDataDir, BuildConfig.BUILD_VERSION_NAME, fullCheck)
+        setRimeOption("_no_learning", !com.osfans.trime.offline.OfflinePrefs.learning)
     }
 
     private fun processKeyInner(value: Int, modifiers: Int, isVirtual: Boolean): Boolean {

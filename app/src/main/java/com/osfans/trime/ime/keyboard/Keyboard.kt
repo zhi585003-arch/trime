@@ -108,7 +108,7 @@ class Keyboard(
                 appContext.windowManager.defaultDisplay.getSize(size)
                 size.x
             }
-            return safeWidth - 2 * appContext.dp(padding)
+            return ((safeWidth - 2 * appContext.dp(padding)) * com.osfans.trime.offline.OfflinePrefs.width / 100f).toInt()
         }
 
     /** Keyboard default ascii mode  */
@@ -137,10 +137,10 @@ class Keyboard(
 
     // todo 把按下按键弹出的内容改为单独设计的view，而不是keyboard
     val keyboardHeight: Int =
-        intArrayOf(
+        (intArrayOf(
             selfConfig?.let { getKeyboardHeightFromKeyboardConfig(it) } ?: 0,
             getKeyboardHeightFromTheme(theme),
-        ).firstOrNull { it > 0 } ?: 0
+        ).firstOrNull { it > 0 } ?: 0) * com.osfans.trime.offline.OfflinePrefs.height / 100
 
     init {
         if (selfConfig != null) {

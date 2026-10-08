@@ -45,6 +45,14 @@ class MainFragment : PaddingPreferenceFragment() {
         rootKey: String?,
     ) {
         preferenceScreen = preferenceManager.createPreferenceScreen(requireContext()).apply {
+            addPreference(androidx.preference.Preference(requireContext()).apply {
+                title = "离线定制：布局、振动与隐私"
+                summary = "键盘大小、位置、学习、剪贴板及配置文件"
+                setOnPreferenceClickListener {
+                    startActivity(android.content.Intent(requireContext(), com.osfans.trime.offline.OfflineSettingsActivity::class.java))
+                    true
+                }
+            })
             addDestinationPreference(
                 R.string.schemata,
                 R.drawable.ic_round_view_list_24,

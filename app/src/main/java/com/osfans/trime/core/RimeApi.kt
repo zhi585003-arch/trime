@@ -50,6 +50,8 @@ interface RimeApi {
 
     suspend fun changeCandidatePage(backward: Boolean): Boolean
 
+    suspend fun rawInput(): String
+
     suspend fun moveCursorPos(position: Int)
 
     suspend fun availableSchemata(): Array<SchemaItem>

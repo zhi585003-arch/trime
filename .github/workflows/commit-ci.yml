@@ -63,7 +63,9 @@ jobs:
             "cmake;3.31.6"
 
       - name: Apply upstream Lua patch
-        run: make patch-apply
+        run: |
+          make patch-apply
+          python3 script/patch-private-learning.py
 
       - name: Build APK
         shell: bash
