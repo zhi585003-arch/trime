@@ -80,6 +80,11 @@ jobs:
           make patch-apply
           python3 script/patch-private-learning.py
 
+      - name: Check Kotlin before native build
+        run: |
+          chmod +x gradlew
+          ./gradlew :app:compileDebugKotlin -PbuildABI=arm64-v8a --max-workers=4 --console=plain
+
       - name: Build APK
         shell: bash
         run: |

@@ -81,8 +81,8 @@ class PinyinEditorUi(private val context: Context) {
         isClickable = true
         scroll.addView(text, android.widget.FrameLayout.LayoutParams(-2, -1))
         addView(scroll, LinearLayout.LayoutParams(0, dp(40), 1f))
-        addView(left, LinearLayout.LayoutParams(dp(48), dp(40)))
-        addView(right, LinearLayout.LayoutParams(dp(48), dp(40)))
+        addView(this@PinyinEditorUi.left, LinearLayout.LayoutParams(dp(48), dp(40)))
+        addView(this@PinyinEditorUi.right, LinearLayout.LayoutParams(dp(48), dp(40)))
         visibility = View.GONE
     }
     private fun applySize() {
