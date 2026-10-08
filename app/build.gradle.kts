@@ -106,7 +106,7 @@ android {
 
     testOptions {
         unitTests.all {
-            it.useJUnitPlatform()
+            if (project.hasProperty("offlinePinyinTests")) it.useJUnit() else it.useJUnitPlatform()
         }
     }
 
