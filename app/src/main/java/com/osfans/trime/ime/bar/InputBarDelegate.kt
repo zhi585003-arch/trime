@@ -64,7 +64,7 @@ class InputBarDelegate : InputBroadcastReceiver {
     private val commonKeyboardActionListener: CommonKeyboardActionListener by di.instance()
     private val candidate: CompactCandidateDelegate by di.instance()
 
-    val themedHeight = theme.generalStyle.run { candidateViewHeight + commentHeight }
+    val themedHeight = com.osfans.trime.offline.OfflinePrefs.candidateHeight
 
     private val prefs = AppPrefs.defaultInstance()
 
@@ -164,9 +164,8 @@ class InputBarDelegate : InputBroadcastReceiver {
 
     private val candidateUi by lazy {
         CandidateUi(context, candidate.view).apply {
-            unrollButton.apply {
-                onSwipeListener = swipeDownHideKeyboardCallback
-            }
+            // The expand arrow should never interpret a slightly downward tap as hide.
+            unrollButton.contentDescription = "展开或收起候选"
         }
     }
 
@@ -199,7 +198,7 @@ class InputBarDelegate : InputBroadcastReceiver {
 
     private fun setUnrollButtonToAttach() {
         candidateUi.unrollButton.setOnClickListener {
-            windowManager.attachWindow(FlexboxUnrolledCandidateWindow())
+            windowManager.attachWindow(FlexboxUnrolledCandidateWindow)
         }
         candidateUi.unrollButton.setIcon(R.drawable.ic_baseline_expand_more_24)
     }
@@ -220,7 +219,7 @@ class InputBarDelegate : InputBroadcastReceiver {
             UnrollButtonStateMachine.BooleanKey.UnrolledCandidatesHighlighted,
         )?.let {
             if (!it) return@let
-            windowManager.attachWindow(FlexboxUnrolledCandidateWindow())
+            windowManager.attachWindow(FlexboxUnrolledCandidateWindow)
         }
     }
 
@@ -349,3 +348,4 @@ class InputBarDelegate : InputBroadcastReceiver {
         alwaysUi.updateButtonsStyle()
     }
 }
+

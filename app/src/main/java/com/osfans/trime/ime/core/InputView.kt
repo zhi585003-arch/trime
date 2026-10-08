@@ -132,6 +132,9 @@ class InputView(
 
         windowManager.cacheResidentWindow(keyboardWindow, createView = true)
         windowManager.cacheResidentWindow(liquidWindow)
+        windowManager.cacheResidentWindow(
+            com.osfans.trime.ime.candidates.unrolled.window.FlexboxUnrolledCandidateWindow(), createView = true,
+        )
         // show KeyboardWindow by default
         windowManager.attachWindow(KeyboardWindow)
 
@@ -147,9 +150,16 @@ class InputView(
                     },
                 )
                 add(
+                    preedit.ui.root,
+                    lParams(matchParent, wrapContent) {
+                        topOfParent()
+                        centerHorizontally()
+                    },
+                )
+                add(
                     inputBar.view,
                     lParams(matchParent, dp(inputBar.themedHeight)) {
-                        topOfParent()
+                        below(preedit.ui.root)
                         centerHorizontally()
                     },
                 )
@@ -196,14 +206,6 @@ class InputView(
             }
 
         updateKeyboardSize()
-
-        add(
-            preedit.ui.root,
-            lParams(matchParent, wrapContent) {
-                above(keyboardView)
-                centerHorizontally()
-            },
-        )
 
         add(
             keyboardView,
@@ -340,3 +342,4 @@ class InputView(
         super.onDetachedFromWindow()
     }
 }
+

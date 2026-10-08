@@ -15,6 +15,7 @@ class UnrolledCandidateLayout(context: Context, theme: Theme) : LinearLayout(con
     val recyclerView = RecyclerView(context)
     private val syllableList = LinearLayout(context).apply { orientation = VERTICAL }
     var onSyllable: (Int) -> Unit = {}
+    var onRestart: () -> Unit = {}
     var onReturn: () -> Unit = {}
     init {
         id = R.id.unrolled_candidate_view
@@ -29,8 +30,22 @@ class UnrolledCandidateLayout(context: Context, theme: Theme) : LinearLayout(con
         addView(side, LayoutParams(dp(66), LayoutParams.MATCH_PARENT))
         addView(recyclerView, LayoutParams(0, LayoutParams.MATCH_PARENT, 1f))
     }
+    private var displayedChoices: List<String>? = null
     fun setSyllables(choices: List<String>) {
+        if (choices == displayedChoices) return
+        displayedChoices = choices.toList()
         syllableList.removeAllViews()
+        if (choices.isEmpty()) {
+            syllableList.addView(android.widget.TextView(context).apply {
+                text = "音节已选完\n请选择汉字"
+                gravity = Gravity.CENTER
+                setTextColor(ColorManager.getColor("candidate_text_color"))
+            }, LayoutParams(LayoutParams.MATCH_PARENT, dp(72)))
+            syllableList.addView(Button(context).apply {
+                text = "重选音节"
+                setOnClickListener { onRestart() }
+            }, LayoutParams(LayoutParams.MATCH_PARENT, dp(64)))
+        }
         choices.forEachIndexed { index, syllable ->
             syllableList.addView(Button(context).apply {
                 text = syllable
@@ -42,3 +57,4 @@ class UnrolledCandidateLayout(context: Context, theme: Theme) : LinearLayout(con
     }
     fun resetPosition() { recyclerView.scrollToPosition(0) }
 }
+

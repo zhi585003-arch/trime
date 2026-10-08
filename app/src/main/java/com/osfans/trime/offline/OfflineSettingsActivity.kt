@@ -96,23 +96,9 @@ class OfflineSettingsFragment : PreferenceFragmentCompat() {
     }
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         preferenceScreen = preferenceManager.createPreferenceScreen(requireContext())
-        val layout = category("键盘布局（收起再打开键盘生效）")
-        fun slider(key: String, title: String, min: Int, max: Int, default: Int) {
-            layout.addPreference(SeekBarPreference(requireContext()).apply {
-                this.key = key; this.title = title; this.min = min; this.max = max
-                setDefaultValue(default); showSeekBarValue = true
-            })
-        }
-        slider("offline_height", "高度百分比", 70, 160, 100)
-        slider("offline_width", "宽度百分比", 65, 100, 100)
-        slider("offline_position", "左右位置：0 最左 / 100 最右", 0, 100, 50)
-        slider("offline_bottom", "底部留白（dp）", 0, 100, 0)
-        slider("offline_text", "按键文字百分比", 70, 150, 100)
-        action(layout, "恢复布局默认值") {
-            OfflinePrefs.shared.edit().apply {
-                listOf("offline_height", "offline_width", "offline_position", "offline_bottom", "offline_text").forEach { remove(it) }
-            }.apply()
-            onCreatePreferences(null, null)
+        val layout = category("键盘布局")
+        action(layout, "布局与实时预览", "一起调整候选栏、拼音编辑栏和键盘；保存前可实时预览") {
+            OfflineLayoutDialog.show(requireContext())
         }
         val feedback = category("按键反馈")
         feedback.addPreference(SwitchPreferenceCompat(requireContext()).apply {
@@ -209,3 +195,4 @@ class OfflineSettingsFragment : PreferenceFragmentCompat() {
         }
     }
 }
+

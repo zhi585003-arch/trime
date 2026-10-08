@@ -20,7 +20,9 @@ import splitties.dimensions.dp
 import splitties.views.dsl.core.wrapContent
 import splitties.views.setPaddingDp
 
-class FlexboxUnrolledCandidateWindow : BaseUnrolledCandidateWindow() {
+class FlexboxUnrolledCandidateWindow : BaseUnrolledCandidateWindow(), com.osfans.trime.ime.window.ResidentWindow {
+    companion object : com.osfans.trime.ime.window.ResidentWindow.Key
+    override val key get() = FlexboxUnrolledCandidateWindow
     override fun exitAnimation(nextWindow: BoardWindow): Transition = Slide().apply {
         slideEdge = Gravity.TOP
     }
@@ -63,3 +65,4 @@ class FlexboxUnrolledCandidateWindow : BaseUnrolledCandidateWindow() {
         }
     }
 }
+

@@ -30,6 +30,8 @@ import com.osfans.trime.ime.core.TrimeInputMethodService
 import com.osfans.trime.ime.keyboard.KeyboardWindow
 import com.osfans.trime.ime.window.BoardWindow
 import com.osfans.trime.ime.window.BoardWindowManager
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -73,10 +75,28 @@ abstract class BaseUnrolledCandidateWindow :
         candidateLayout.onSyllable = { index ->
             val context = syllableContext
             val choice = syllableChoices.getOrNull(index)
-            if (context != null && choice != null) service.lifecycleScope.launch {
-                rime.runOnReady { selectPinyinPrefix(context.input, context.composition.preedit, choice.caret) }
-                refreshSyllables()
+            if (context != null && choice != null && !selectingSyllable) service.lifecycleScope.launch {
+                selectingSyllable = true
+                syllableJob?.cancel()
+                try {
+                    val result = rime.runOnReady {
+                        val ok = splitPinyin(context.input, context.composition.preedit, choice.caret)
+                        ok to inputContext()
+                    }
+                    if (result.first) {
+                        splitInput = result.second.input
+                        nextSyllableStart = choice.caret + if (choice.caret < splitInput!!.length && splitInput!![choice.caret] == '\'') 1 else 0
+                    }
+                } finally {
+                    selectingSyllable = false
+                    refreshSyllables()
+                }
             }
+        }
+        candidateLayout.onRestart = {
+            splitInput = null
+            nextSyllableStart = null
+            refreshSyllables()
         }
         candidateLayout.onReturn = { windowManager.attachWindow(KeyboardWindow) }
         return candidateLayout
@@ -106,6 +126,7 @@ abstract class BaseUnrolledCandidateWindow :
     private var candidatesSubmitJob: Job? = null
 
     override fun onAttached() {
+        attached = true
         lifecycleCoroutineScope = candidateLayout.findViewTreeLifecycleOwner()!!.lifecycleScope
         refreshSyllables()
         bar.unrollButtonStateMachine.push(UnrollButtonStateMachine.TransitionEvent.UnrolledCandidatesAttached)
@@ -146,14 +167,23 @@ abstract class BaseUnrolledCandidateWindow :
     private var syllableJob: Job? = null
     private var syllableContext: com.osfans.trime.core.ContextProto? = null
     private var syllableChoices = emptyList<com.osfans.trime.ime.candidates.unrolled.PinyinChoices.Choice>()
-    private val syllables by lazy {
+    private var attached = false
+    private var selectingSyllable = false
+    private var splitInput: String? = null
+    private var nextSyllableStart: Int? = null
+    private val syllables = service.lifecycleScope.async(Dispatchers.IO) {
         service.assets.open("pinyin-syllables.txt").bufferedReader().use { it.readLines().toSet() }
     }
     private fun refreshSyllables() {
+        if (!attached || selectingSyllable) return
         syllableJob?.cancel()
         syllableJob = lifecycleCoroutineScope.launch {
             val context = rime.runOnReady { inputContext() }
-            val choices = com.osfans.trime.ime.candidates.unrolled.PinyinChoices.from(context, syllables)
+            if (context.input != splitInput) {
+                splitInput = null
+                nextSyllableStart = null
+            }
+            val choices = com.osfans.trime.ime.candidates.unrolled.PinyinChoices.from(context, syllables.await(), nextSyllableStart)
             syllableContext = context
             syllableChoices = choices
             candidateLayout.setSyllables(choices.map { it.label })
@@ -162,10 +192,11 @@ abstract class BaseUnrolledCandidateWindow :
     override fun onCompositionUpdate(data: com.osfans.trime.core.CompositionProto) {
         // Inline-preedit mode intentionally sends an empty display composition.
         // Query the actual engine context rather than parsing this UI message.
-        if (::lifecycleCoroutineScope.isInitialized) refreshSyllables()
+        if (attached) refreshSyllables()
     }
 
     override fun onDetached() {
+        attached = false
         bar.unrollButtonStateMachine.push(
             UnrollButtonStateMachine.TransitionEvent.UnrolledCandidatesDetached,
             UnrollButtonStateMachine.BooleanKey.UnrolledCandidatesEmpty to
@@ -178,3 +209,4 @@ abstract class BaseUnrolledCandidateWindow :
         candidatesSubmitJob?.cancel()
     }
 }
+

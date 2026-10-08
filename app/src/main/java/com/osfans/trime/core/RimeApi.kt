@@ -54,6 +54,10 @@ interface RimeApi {
 
     suspend fun selectPinyinPrefix(expectedInput: String, expectedPreedit: String?, position: Int): Boolean
 
+    suspend fun splitPinyin(expectedInput: String, expectedPreedit: String?, position: Int): Boolean
+
+    suspend fun movePinyinCursor(expectedInput: String, position: Int? = null, delta: Int = 0): Boolean
+
     suspend fun rawInput(): String
 
     suspend fun moveCursorPos(position: Int)
@@ -88,3 +92,4 @@ interface RimeApi {
         limit: Int,
     ): Array<CandidateItem>
 }
+

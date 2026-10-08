@@ -40,4 +40,22 @@ class PinyinChoicesTest {
     @Test fun softCursorAfterConfirmedWordDoesNotChangeRawOffset() {
         assertEquals(listOf("an" to 4), choices("xian", "西\u2038an"))
     }
+
+    @Test fun selectedXiShowsRemainingAnWithoutSelectingChinese() {
+        val context = ContextProto(input = "xi'an", composition = CompositionProto(preedit = "xi an\u2038"))
+        assertEquals(listOf("an" to 5), PinyinChoices.from(context, inventory, 3).map { it.label to it.caret })
+    }
+    @Test fun selectedFullSyllableFinishesChoices() {
+        val context = ContextProto(input = "xian", composition = CompositionProto(preedit = "xian\u2038"))
+        assertEquals(emptyList<PinyinChoices.Choice>(), PinyinChoices.from(context, inventory, 4))
+    }
+    @Test fun nextSyllableCanBeSplitBeforeChoosingAnyChinese() {
+        val context = ContextProto(input = "xi'an", composition = CompositionProto(preedit = "xi'an\u2038"))
+        assertEquals(listOf("a" to 4, "an" to 5), PinyinChoices.from(context, inventory + "a", 3).map { it.label to it.caret })
+    }
+    @Test fun confirmedChineseSkipsEarlierSplitOffset() {
+        val context = ContextProto(input = "xi'an", composition = CompositionProto(preedit = "西'an\u2038"))
+        assertEquals(listOf("an" to 5), PinyinChoices.from(context, inventory, 1).map { it.label to it.caret })
+    }
 }
+

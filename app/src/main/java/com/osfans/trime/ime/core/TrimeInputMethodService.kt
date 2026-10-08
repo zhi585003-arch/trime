@@ -533,7 +533,7 @@ open class TrimeInputMethodService : LifecycleInputMethodService() {
         restarting: Boolean,
     ) {
         Timber.d("onStartInputView: restarting=$restarting")
-        val signature = com.osfans.trime.offline.OfflinePrefs.run { "$height/$width/$position/$bottom/$textScale" }
+        val signature = com.osfans.trime.offline.OfflinePrefs.layoutSignature
         if (signature != offlineLayoutSignature) {
             offlineLayoutSignature = signature
             replaceInputViews(ThemeManager.activeTheme)
@@ -990,3 +990,4 @@ open class TrimeInputMethodService : LifecycleInputMethodService() {
         showingDialog = dialog
     }
 }
+

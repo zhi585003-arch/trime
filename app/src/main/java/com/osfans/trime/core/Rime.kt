@@ -152,6 +152,34 @@ class Rime :
         }
     }
 
+    override suspend fun splitPinyin(expectedInput: String, expectedPreedit: String?, position: Int): Boolean = withRimeContext {
+        val context = getRimeContext()
+        if (context.input != expectedInput || context.composition.preedit != expectedPreedit || position !in 1..context.input.length) {
+            false
+        } else {
+            // An explicit separator retains the selected boundary while subsequent syllables are chosen.
+            setRimeCaretPos(position)
+            val handled = if (position < context.input.length && context.input[position] != '\'') {
+                processRimeKey('\''.code, 0)
+            } else true
+            setRimeCaretPos(getRimeRawInput().length)
+            emitResponse()
+            val expected = if (position < expectedInput.length && expectedInput[position] != '\'') {
+                expectedInput.substring(0, position) + "'" + expectedInput.substring(position)
+            } else expectedInput
+            handled && getRimeRawInput() == expected
+        }
+    }
+
+    override suspend fun movePinyinCursor(expectedInput: String, position: Int?, delta: Int): Boolean = withRimeContext {
+        val context = getRimeContext()
+        if (context.input != expectedInput) false else {
+            setRimeCaretPos((position ?: (context.caretPos + delta)).coerceIn(0, context.input.length))
+            emitResponse()
+            true
+        }
+    }
+
     override suspend fun rawInput(): String = withRimeContext { getRimeRawInput() }
 
     override suspend fun moveCursorPos(position: Int) = withRimeContext {
@@ -525,3 +553,4 @@ class Rime :
         }
     }
 }
+

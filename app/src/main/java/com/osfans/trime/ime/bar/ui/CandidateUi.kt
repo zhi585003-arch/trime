@@ -30,7 +30,7 @@ class CandidateUi(
         ctx.constraintLayout {
             add(
                 unrollButton,
-                lParams(dp(40)) {
+                lParams(dp(48), android.view.ViewGroup.LayoutParams.MATCH_PARENT) {
                     centerVertically()
                     endOfParent()
                 },
@@ -45,3 +45,4 @@ class CandidateUi(
             )
         }
 }
+

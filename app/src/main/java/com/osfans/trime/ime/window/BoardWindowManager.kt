@@ -73,6 +73,7 @@ class BoardWindowManager {
     fun attachWindow(window: BoardWindow) {
         if (window === currentWindow) {
             Timber.d("Skip attaching $window")
+            return
         }
         val newView =
             if (window is ResidentWindow) {
@@ -86,12 +87,11 @@ class BoardWindowManager {
         if (currentWindow != null) {
             val oldWindow = currentWindow!!
             val oldView = currentView!!
-            prepareAnimation(
-                oldWindow.exitAnimation(window),
-                window.enterAnimation(oldWindow),
-                oldView,
-                newView,
-            )
+            // Candidate paging and keyboard replacement should not compete with a transition.
+            if (oldWindow !is com.osfans.trime.ime.candidates.unrolled.window.BaseUnrolledCandidateWindow &&
+                window !is com.osfans.trime.ime.candidates.unrolled.window.BaseUnrolledCandidateWindow) {
+                prepareAnimation(oldWindow.exitAnimation(window), window.enterAnimation(oldWindow), oldView, newView)
+            }
             oldWindow.onDetached()
             view.removeView(oldView)
             broadcaster.onWindowDetached(oldWindow)
@@ -115,3 +115,4 @@ class BoardWindowManager {
 
     fun isAttached(window: BoardWindow) = currentWindow === window
 }
+
