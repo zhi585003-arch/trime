@@ -8,6 +8,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.Preference
+import androidx.preference.ListPreference
 import androidx.preference.PreferenceCategory
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SeekBarPreference
@@ -117,12 +118,32 @@ class OfflineSettingsFragment : PreferenceFragmentCompat() {
         feedback.addPreference(SwitchPreferenceCompat(requireContext()).apply {
             key = AppPrefs.Keyboard.VIBRATE_ON_KEY_PRESS; title = "按键振动"; setDefaultValue(true)
         })
+        feedback.addPreference(ListPreference(requireContext()).apply {
+            key = "offline_haptic_mode"; title = "振动方式"
+            entries = arrayOf("跟随系统按键触感（推荐）", "自定义时长与强度")
+            entryValues = arrayOf("system", "custom"); setDefaultValue("system")
+            summaryProvider = ListPreference.SimpleSummaryProvider.getInstance()
+            setOnPreferenceChangeListener { _, value ->
+                findPreference<Preference>(AppPrefs.Keyboard.VIBRATION_DURATION)?.isEnabled = value == "custom"
+                findPreference<Preference>(AppPrefs.Keyboard.VIBRATION_AMPLITUDE)?.isEnabled = value == "custom"
+                true
+            }
+        })
+        action(feedback, "打开系统声音与振动设置", "系统模式使用手机提供的按键触感；实际强度和手感由系统与硬件决定") {
+            runCatching { startActivity(android.content.Intent(android.provider.Settings.ACTION_SOUND_SETTINGS)) }
+                .onFailure { toast("无法打开系统页面，请在手机设置中打开声音与振动") }
+        }
+        action(feedback, "试一下按键触感") {
+            view?.let { com.osfans.trime.ime.keyboard.InputFeedbackManager.keyPressVibrate(it) }
+        }
         feedback.addPreference(SeekBarPreference(requireContext()).apply {
-            key = AppPrefs.Keyboard.VIBRATION_DURATION; title = "振动时长（毫秒，0 跟随系统）"
+            key = AppPrefs.Keyboard.VIBRATION_DURATION; title = "自定义振动时长（毫秒，0 使用系统触感）"
+            isEnabled = !OfflinePrefs.systemHaptics
             min = 0; max = 50; setDefaultValue(15); showSeekBarValue = true
         })
         feedback.addPreference(SeekBarPreference(requireContext()).apply {
-            key = AppPrefs.Keyboard.VIBRATION_AMPLITUDE; title = "振动强度（硬件支持时有效，0 为默认）"
+            key = AppPrefs.Keyboard.VIBRATION_AMPLITUDE; title = "自定义振动强度（硬件支持时有效，0 为默认）"
+            isEnabled = !OfflinePrefs.systemHaptics
             min = 0; max = 255; setDefaultValue(0); showSeekBarValue = true
         })
         val privacy = category("隐私与本地数据")

@@ -121,6 +121,8 @@ class PopupKeyboardUi(
         setColor(ColorManager.getColor("hilited_popup_back_color"))
     }
 
+    private val letterPicker = keys.size == 3 && keys.first().startsWith("OfflineUpper") && keys.last().startsWith("OfflineLower")
+
     private val rowCount: Int
     private val columnCount: Int
 
@@ -134,7 +136,7 @@ class PopupKeyboardUi(
         columnCount = (keyCount / rowCount).roundToInt()
 
         focusRow = 0
-        focusColumn = calcInitialFocusedColumn(columnCount, keyWidth, outerBounds, triggerBounds)
+        focusColumn = if (letterPicker) 1 else calcInitialFocusedColumn(columnCount, keyWidth, outerBounds, triggerBounds)
     }
 
     /**
@@ -166,10 +168,13 @@ class PopupKeyboardUi(
      * Applying only `1.` parts of both X and Y offset, the origin should transform from `o` to `p`.
      * `2.` parts of both offset transform it from `p` to `c`.
      */
-    override val offsetX = ((triggerBounds.width() - keyWidth) / 2) - (keyWidth * focusColumn)
+    override val offsetX = (((triggerBounds.width() - keyWidth) / 2) - (keyWidth * focusColumn)).let { offset ->
+        if (letterPicker) offset.coerceIn(outerBounds.left - triggerBounds.left,
+            maxOf(outerBounds.left, outerBounds.right - columnCount * keyWidth) - triggerBounds.left) else offset
+    }
     override val offsetY = (triggerBounds.height() - popupHeight) - (keyHeight * (rowCount - 1))
 
-    private val columnOrder = createColumnOrder(columnCount, focusColumn)
+    private val columnOrder = if (letterPicker) IntArray(columnCount) { it } else createColumnOrder(columnCount, focusColumn)
 
     /**
      * row with smaller index displays at bottom.

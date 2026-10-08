@@ -14,6 +14,7 @@ for layout in ['default', 'letter']:
     for key in 'qwertyuiopasdfghjklzxcvbnm':
         lines = [l for l in block.splitlines() if re.search(r'\{click: ' + key + ',', l)]
         assert len(lines) == 1 and 'swipe_up: OfflineSym' + key in lines[0], (layout, key)
+        assert f'popup: [OfflineUpper{key}, OfflineSym{key}, OfflineLower{key}]' in lines[0], (layout, key)
     assert 'swipe_up: OfflineClear' in block
 syllables = (root / 'app/src/main/assets/pinyin-syllables.txt').read_text().splitlines()
 assert {'xi', 'xian', 'an'}.issubset(syllables)

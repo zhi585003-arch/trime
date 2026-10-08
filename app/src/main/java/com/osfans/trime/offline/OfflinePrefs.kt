@@ -11,5 +11,6 @@ object OfflinePrefs {
     val position get() = number("offline_position", 50).coerceIn(0, 100)
     val bottom get() = number("offline_bottom", 0).coerceIn(0, 100)
     val textScale get() = number("offline_text", 100).coerceIn(70, 150) / 100f
+    val systemHaptics get() = shared.getString("offline_haptic_mode", "system") != "custom"
     val learning get() = shared.getBoolean("offline_learning", true)
 }

@@ -114,7 +114,14 @@ object InputFeedbackManager {
                 HapticFeedbackConstants.KEYBOARD_TAP
             }
 
-        if (duration != 0L) { // use vibrator
+        if (com.osfans.trime.offline.OfflinePrefs.systemHaptics || duration == 0L) {
+            // Respect both the view setting and the device touch-feedback setting.
+            // Do not fall back to a raw vibration when the system disables feedback.
+            view.performHapticFeedback(hfc)
+            return
+        }
+
+        if (duration > 0L) { // explicitly selected custom vibration
             if (hasAmplitudeControl && vibrationAmplitude != 0) {
                 vibrator.vibrate(VibrationEffect.createOneShot(duration, vibrationAmplitude))
             } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -124,11 +131,6 @@ object InputFeedbackManager {
                 @Suppress("DEPRECATION")
                 vibrator.vibrate(duration)
             }
-        } else {
-            @Suppress("DEPRECATION")
-            val flags =
-                HapticFeedbackConstants.FLAG_IGNORE_VIEW_SETTING or HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING
-            view.performHapticFeedback(hfc, flags)
         }
     }
 

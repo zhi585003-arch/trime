@@ -5,7 +5,7 @@
 # Trime custom style settings
 # encoding: utf-8
 
-config_version: "3.0.20261008.2"
+config_version: "3.0.20261008.3"
 name: 标准          #方案名称
 author: 风花絮        #作者信息
 
@@ -1062,37 +1062,37 @@ preset_keyboards:
   #  height: 48
     ascii_mode: 0
     keys:
-      - {click: q, long_click: 1, key_back_color: bh1, key_text_color: th1, swipe_up: OfflineSymq, label_symbol: "1"}
-      - {click: w, long_click: 2, key_back_color: bh1, key_text_color: th1, swipe_up: OfflineSymw, label_symbol: "2"}
-      - {click: e, long_click: 3, key_back_color: bh1, key_text_color: th1, swipe_up: OfflineSyme, label_symbol: "3"}
-      - {click: r, long_click: 4, key_back_color: bh1, key_text_color: th1, swipe_up: OfflineSymr, label_symbol: "4"}
-      - {click: t, long_click: 5, key_back_color: bh1, key_text_color: th1, swipe_up: OfflineSymt, label_symbol: "5"}
-      - {click: y, long_click: 6, key_back_color: bh1, key_text_color: th1, swipe_up: OfflineSymy, label_symbol: "6"}
-      - {click: u, long_click: 7, key_back_color: bh1, key_text_color: th1, swipe_up: OfflineSymu, label_symbol: "7"}
-      - {click: i, long_click: 8, key_back_color: bh1, key_text_color: th1, swipe_up: OfflineSymi, label_symbol: "8"}
-      - {click: o, long_click: 9, key_back_color: bh1, key_text_color: th1, swipe_up: OfflineSymo, label_symbol: "9"}
-      - {click: p, long_click: 0, key_back_color: bh1, key_text_color: th1, swipe_up: OfflineSymp, label_symbol: "0"}
+      - {click: q, long_click: 1, key_back_color: bh1, key_text_color: th1, swipe_up: OfflineSymq, label_symbol: "1", popup: [OfflineUpperq, OfflineSymq, OfflineLowerq]}
+      - {click: w, long_click: 2, key_back_color: bh1, key_text_color: th1, swipe_up: OfflineSymw, label_symbol: "2", popup: [OfflineUpperw, OfflineSymw, OfflineLowerw]}
+      - {click: e, long_click: 3, key_back_color: bh1, key_text_color: th1, swipe_up: OfflineSyme, label_symbol: "3", popup: [OfflineUppere, OfflineSyme, OfflineLowere]}
+      - {click: r, long_click: 4, key_back_color: bh1, key_text_color: th1, swipe_up: OfflineSymr, label_symbol: "4", popup: [OfflineUpperr, OfflineSymr, OfflineLowerr]}
+      - {click: t, long_click: 5, key_back_color: bh1, key_text_color: th1, swipe_up: OfflineSymt, label_symbol: "5", popup: [OfflineUppert, OfflineSymt, OfflineLowert]}
+      - {click: y, long_click: 6, key_back_color: bh1, key_text_color: th1, swipe_up: OfflineSymy, label_symbol: "6", popup: [OfflineUppery, OfflineSymy, OfflineLowery]}
+      - {click: u, long_click: 7, key_back_color: bh1, key_text_color: th1, swipe_up: OfflineSymu, label_symbol: "7", popup: [OfflineUpperu, OfflineSymu, OfflineLoweru]}
+      - {click: i, long_click: 8, key_back_color: bh1, key_text_color: th1, swipe_up: OfflineSymi, label_symbol: "8", popup: [OfflineUpperi, OfflineSymi, OfflineLoweri]}
+      - {click: o, long_click: 9, key_back_color: bh1, key_text_color: th1, swipe_up: OfflineSymo, label_symbol: "9", popup: [OfflineUppero, OfflineSymo, OfflineLowero]}
+      - {click: p, long_click: 0, key_back_color: bh1, key_text_color: th1, swipe_up: OfflineSymp, label_symbol: "0", popup: [OfflineUpperp, OfflineSymp, OfflineLowerp]}
 
       - {width: 5, key_back_color: bh2, key_text_color: th2}
-      - {click: a, long_click: select_all, key_back_color: bh2, key_text_color: th2, swipe_up: OfflineSyma, label_symbol: "~"}
-      - {click: s, long_click: '@', key_back_color: bh2, key_text_color: th2, swipe_up: OfflineSyms, label_symbol: "@"}
-      - {click: d, long_click: '#', key_back_color: bh2, key_text_color: th2, swipe_up: OfflineSymd, label_symbol: "#"}
-      - {click: f, long_click: '$', key_back_color: bh2, key_text_color: th2, swipe_up: OfflineSymf, label_symbol: "!"}
-      - {click: g, long_click: '%', swipe_down: "date_time", key_back_color: bh2, key_text_color: th2, swipe_up: OfflineSymg, label_symbol: "%"}
-      - {click: h, long_click: '!', swipe_down: "+", key_back_color: bh2, key_text_color: th2, swipe_up: OfflineSymh, label_symbol: "&"}
-      - {click: j, long_click: '&', swipe_down: "-", key_back_color: bh2, key_text_color: th2, swipe_up: OfflineSymj, label_symbol: "*"}
-      - {click: k, long_click: '*', swipe_down: "_", key_back_color: bh2, key_text_color: th2, swipe_up: OfflineSymk, label_symbol: "("}
-      - {click: l, long_click: '(){Left}', swipe_down: "=", key_back_color: bh2, key_text_color: th2, swipe_up: OfflineSyml, label_symbol: ")"}
+      - {click: a, long_click: select_all, key_back_color: bh2, key_text_color: th2, swipe_up: OfflineSyma, label_symbol: "~", popup: [OfflineUppera, OfflineSyma, OfflineLowera]}
+      - {click: s, long_click: '@', key_back_color: bh2, key_text_color: th2, swipe_up: OfflineSyms, label_symbol: "@", popup: [OfflineUppers, OfflineSyms, OfflineLowers]}
+      - {click: d, long_click: '#', key_back_color: bh2, key_text_color: th2, swipe_up: OfflineSymd, label_symbol: "#", popup: [OfflineUpperd, OfflineSymd, OfflineLowerd]}
+      - {click: f, long_click: '$', key_back_color: bh2, key_text_color: th2, swipe_up: OfflineSymf, label_symbol: "!", popup: [OfflineUpperf, OfflineSymf, OfflineLowerf]}
+      - {click: g, long_click: '%', swipe_down: "date_time", key_back_color: bh2, key_text_color: th2, swipe_up: OfflineSymg, label_symbol: "%", popup: [OfflineUpperg, OfflineSymg, OfflineLowerg]}
+      - {click: h, long_click: '!', swipe_down: "+", key_back_color: bh2, key_text_color: th2, swipe_up: OfflineSymh, label_symbol: "&", popup: [OfflineUpperh, OfflineSymh, OfflineLowerh]}
+      - {click: j, long_click: '&', swipe_down: "-", key_back_color: bh2, key_text_color: th2, swipe_up: OfflineSymj, label_symbol: "*", popup: [OfflineUpperj, OfflineSymj, OfflineLowerj]}
+      - {click: k, long_click: '*', swipe_down: "_", key_back_color: bh2, key_text_color: th2, swipe_up: OfflineSymk, label_symbol: "(", popup: [OfflineUpperk, OfflineSymk, OfflineLowerk]}
+      - {click: l, long_click: '(){Left}', swipe_down: "=", key_back_color: bh2, key_text_color: th2, swipe_up: OfflineSyml, label_symbol: ")", popup: [OfflineUpperl, OfflineSyml, OfflineLowerl]}
       - {width: 5, key_back_color: bh2, key_text_color: th2}
 
       - {click: Shift_L, label_symbol: " ", long_click: Shift_L, double_click: Shift_L3, composing: delimiter, width: 15, hilited_key_back_color: benter, key_back_color: bbs, key_text_color: tbs}
-      - {click: z, long_click: '`', swipe_down: '[]{Left}', key_back_color: bh3, key_text_color: th3, swipe_up: OfflineSymz, label_symbol: "`"}
-      - {click: x, long_click: cut, swipe_down: '{}{Left}', key_back_color: bh3, key_text_color: th3, swipe_up: OfflineSymx, label_symbol: "/"}
-      - {click: c, long_click: copy, swipe_down: ' ', key_back_color: bh3, key_text_color: th3, swipe_up: OfflineSymc, label_symbol: "-"}
-      - {click: v, long_click: paste_clip, swipe_down: paste, key_back_color: bh3, key_text_color: th3, swipe_up: OfflineSymv, label_symbol: "_"}
-      - {click: b, long_click: ";", swipe_down: "\\", key_back_color: bh3, key_text_color: th3, swipe_up: OfflineSymb, label_symbol: ":"}
-      - {click: n, long_click: ":", key_back_color: bh3, key_text_color: th3, swipe_up: OfflineSymn, label_symbol: ";"}
-      - {click: m, long_click: '?', swipe_down: "|", key_back_color: bh3, key_text_color: th3, swipe_up: OfflineSymm, label_symbol: "?"}
+      - {click: z, long_click: '`', swipe_down: '[]{Left}', key_back_color: bh3, key_text_color: th3, swipe_up: OfflineSymz, label_symbol: "`", popup: [OfflineUpperz, OfflineSymz, OfflineLowerz]}
+      - {click: x, long_click: cut, swipe_down: '{}{Left}', key_back_color: bh3, key_text_color: th3, swipe_up: OfflineSymx, label_symbol: "/", popup: [OfflineUpperx, OfflineSymx, OfflineLowerx]}
+      - {click: c, long_click: copy, swipe_down: ' ', key_back_color: bh3, key_text_color: th3, swipe_up: OfflineSymc, label_symbol: "-", popup: [OfflineUpperc, OfflineSymc, OfflineLowerc]}
+      - {click: v, long_click: paste_clip, swipe_down: paste, key_back_color: bh3, key_text_color: th3, swipe_up: OfflineSymv, label_symbol: "_", popup: [OfflineUpperv, OfflineSymv, OfflineLowerv]}
+      - {click: b, long_click: ";", swipe_down: "\\", key_back_color: bh3, key_text_color: th3, swipe_up: OfflineSymb, label_symbol: ":", popup: [OfflineUpperb, OfflineSymb, OfflineLowerb]}
+      - {click: n, long_click: ":", key_back_color: bh3, key_text_color: th3, swipe_up: OfflineSymn, label_symbol: ";", popup: [OfflineUppern, OfflineSymn, OfflineLowern]}
+      - {click: m, long_click: '?', swipe_down: "|", key_back_color: bh3, key_text_color: th3, swipe_up: OfflineSymm, label_symbol: "?", popup: [OfflineUpperm, OfflineSymm, OfflineLowerm]}
       - {click: BackSpace2, swipe_up: OfflineClear, width: 15, key_back_color: bbs, key_text_color: tbs}
 
       - {click: Keyboard_number, long_click: Menu, width: 12.5, key_back_color: bgn, key_text_color: tgn}
@@ -1111,37 +1111,37 @@ preset_keyboards:
     ascii_mode: 1
     keys:
     
-      - {click: q, long_click: 1, key_back_color: bh1, key_text_color: th1, swipe_up: OfflineSymq, label_symbol: "1"}
-      - {click: w, long_click: 2, key_back_color: bh1, key_text_color: th1, swipe_up: OfflineSymw, label_symbol: "2"}
-      - {click: e, long_click: 3, key_back_color: bh1, key_text_color: th1, swipe_up: OfflineSyme, label_symbol: "3"}
-      - {click: r, long_click: 4, key_back_color: bh1, key_text_color: th1, swipe_up: OfflineSymr, label_symbol: "4"}
-      - {click: t, long_click: 5, key_back_color: bh1, key_text_color: th1, swipe_up: OfflineSymt, label_symbol: "5"}
-      - {click: y, long_click: 6, key_back_color: bh1, key_text_color: th1, swipe_up: OfflineSymy, label_symbol: "6"}
-      - {click: u, long_click: 7, key_back_color: bh1, key_text_color: th1, swipe_up: OfflineSymu, label_symbol: "7"}
-      - {click: i, long_click: 8, key_back_color: bh1, key_text_color: th1, swipe_up: OfflineSymi, label_symbol: "8"}
-      - {click: o, long_click: 9, key_back_color: bh1, key_text_color: th1, swipe_up: OfflineSymo, label_symbol: "9"}
-      - {click: p, long_click: 0, key_back_color: bh1, key_text_color: th1, swipe_up: OfflineSymp, label_symbol: "0"}
+      - {click: q, long_click: 1, key_back_color: bh1, key_text_color: th1, swipe_up: OfflineSymq, label_symbol: "1", popup: [OfflineUpperq, OfflineSymq, OfflineLowerq]}
+      - {click: w, long_click: 2, key_back_color: bh1, key_text_color: th1, swipe_up: OfflineSymw, label_symbol: "2", popup: [OfflineUpperw, OfflineSymw, OfflineLowerw]}
+      - {click: e, long_click: 3, key_back_color: bh1, key_text_color: th1, swipe_up: OfflineSyme, label_symbol: "3", popup: [OfflineUppere, OfflineSyme, OfflineLowere]}
+      - {click: r, long_click: 4, key_back_color: bh1, key_text_color: th1, swipe_up: OfflineSymr, label_symbol: "4", popup: [OfflineUpperr, OfflineSymr, OfflineLowerr]}
+      - {click: t, long_click: 5, key_back_color: bh1, key_text_color: th1, swipe_up: OfflineSymt, label_symbol: "5", popup: [OfflineUppert, OfflineSymt, OfflineLowert]}
+      - {click: y, long_click: 6, key_back_color: bh1, key_text_color: th1, swipe_up: OfflineSymy, label_symbol: "6", popup: [OfflineUppery, OfflineSymy, OfflineLowery]}
+      - {click: u, long_click: 7, key_back_color: bh1, key_text_color: th1, swipe_up: OfflineSymu, label_symbol: "7", popup: [OfflineUpperu, OfflineSymu, OfflineLoweru]}
+      - {click: i, long_click: 8, key_back_color: bh1, key_text_color: th1, swipe_up: OfflineSymi, label_symbol: "8", popup: [OfflineUpperi, OfflineSymi, OfflineLoweri]}
+      - {click: o, long_click: 9, key_back_color: bh1, key_text_color: th1, swipe_up: OfflineSymo, label_symbol: "9", popup: [OfflineUppero, OfflineSymo, OfflineLowero]}
+      - {click: p, long_click: 0, key_back_color: bh1, key_text_color: th1, swipe_up: OfflineSymp, label_symbol: "0", popup: [OfflineUpperp, OfflineSymp, OfflineLowerp]}
 
       - {width: 5, key_back_color: bh2, key_text_color: th2}
-      - {click: a, long_click: select_all, key_back_color: bh2, key_text_color: th2, swipe_up: OfflineSyma, label_symbol: "~"}
-      - {click: s, long_click: '@', key_back_color: bh2, key_text_color: th2, swipe_up: OfflineSyms, label_symbol: "@"}
-      - {click: d, long_click: '#', key_back_color: bh2, key_text_color: th2, swipe_up: OfflineSymd, label_symbol: "#"}
-      - {click: f, long_click: '$', key_back_color: bh2, key_text_color: th2, swipe_up: OfflineSymf, label_symbol: "!"}
-      - {click: g, long_click: '%', swipe_down: "date_time", key_back_color: bh2, key_text_color: th2, swipe_up: OfflineSymg, label_symbol: "%"}
-      - {click: h, long_click: '!', swipe_down: "+", key_back_color: bh2, key_text_color: th2, swipe_up: OfflineSymh, label_symbol: "&"}
-      - {click: j, long_click: '&', swipe_down: "-", key_back_color: bh2, key_text_color: th2, swipe_up: OfflineSymj, label_symbol: "*"}
-      - {click: k, long_click: '*', swipe_down: "_", key_back_color: bh2, key_text_color: th2, swipe_up: OfflineSymk, label_symbol: "("}
-      - {click: l, long_click: '(){Left}', swipe_down: "=", key_back_color: bh2, key_text_color: th2, swipe_up: OfflineSyml, label_symbol: ")"}
+      - {click: a, long_click: select_all, key_back_color: bh2, key_text_color: th2, swipe_up: OfflineSyma, label_symbol: "~", popup: [OfflineUppera, OfflineSyma, OfflineLowera]}
+      - {click: s, long_click: '@', key_back_color: bh2, key_text_color: th2, swipe_up: OfflineSyms, label_symbol: "@", popup: [OfflineUppers, OfflineSyms, OfflineLowers]}
+      - {click: d, long_click: '#', key_back_color: bh2, key_text_color: th2, swipe_up: OfflineSymd, label_symbol: "#", popup: [OfflineUpperd, OfflineSymd, OfflineLowerd]}
+      - {click: f, long_click: '$', key_back_color: bh2, key_text_color: th2, swipe_up: OfflineSymf, label_symbol: "!", popup: [OfflineUpperf, OfflineSymf, OfflineLowerf]}
+      - {click: g, long_click: '%', swipe_down: "date_time", key_back_color: bh2, key_text_color: th2, swipe_up: OfflineSymg, label_symbol: "%", popup: [OfflineUpperg, OfflineSymg, OfflineLowerg]}
+      - {click: h, long_click: '!', swipe_down: "+", key_back_color: bh2, key_text_color: th2, swipe_up: OfflineSymh, label_symbol: "&", popup: [OfflineUpperh, OfflineSymh, OfflineLowerh]}
+      - {click: j, long_click: '&', swipe_down: "-", key_back_color: bh2, key_text_color: th2, swipe_up: OfflineSymj, label_symbol: "*", popup: [OfflineUpperj, OfflineSymj, OfflineLowerj]}
+      - {click: k, long_click: '*', swipe_down: "_", key_back_color: bh2, key_text_color: th2, swipe_up: OfflineSymk, label_symbol: "(", popup: [OfflineUpperk, OfflineSymk, OfflineLowerk]}
+      - {click: l, long_click: '(){Left}', swipe_down: "=", key_back_color: bh2, key_text_color: th2, swipe_up: OfflineSyml, label_symbol: ")", popup: [OfflineUpperl, OfflineSyml, OfflineLowerl]}
       - {width: 5, key_back_color: bh2, key_text_color: th2}
 
       - {click: Shift_L, composing: delimiter, width: 15, hilited_key_back_color: benter, key_back_color: bbs, key_text_color: tbs}
-      - {click: z, long_click: '`', swipe_down: '[]{Left}', key_back_color: bh3, key_text_color: th3, swipe_up: OfflineSymz, label_symbol: "`"}
-      - {click: x, long_click: cut, swipe_down: '{}{Left}', key_back_color: bh3, key_text_color: th3, swipe_up: OfflineSymx, label_symbol: "/"}
-      - {click: c, long_click: copy, swipe_down: ' ', key_back_color: bh3, key_text_color: th3, swipe_up: OfflineSymc, label_symbol: "-"}
-      - {click: v, long_click: paste_clip, swipe_down: paste, key_back_color: bh3, key_text_color: th3, swipe_up: OfflineSymv, label_symbol: "_"}
-      - {click: b, long_click: ";", swipe_down: "\\", key_back_color: bh3, key_text_color: th3, swipe_up: OfflineSymb, label_symbol: ":"}
-      - {click: n, long_click: ":", key_back_color: bh3, key_text_color: th3, swipe_up: OfflineSymn, label_symbol: ";"}
-      - {click: m, long_click: '?', swipe_down: "|", key_back_color: bh3, key_text_color: th3, swipe_up: OfflineSymm, label_symbol: "?"}
+      - {click: z, long_click: '`', swipe_down: '[]{Left}', key_back_color: bh3, key_text_color: th3, swipe_up: OfflineSymz, label_symbol: "`", popup: [OfflineUpperz, OfflineSymz, OfflineLowerz]}
+      - {click: x, long_click: cut, swipe_down: '{}{Left}', key_back_color: bh3, key_text_color: th3, swipe_up: OfflineSymx, label_symbol: "/", popup: [OfflineUpperx, OfflineSymx, OfflineLowerx]}
+      - {click: c, long_click: copy, swipe_down: ' ', key_back_color: bh3, key_text_color: th3, swipe_up: OfflineSymc, label_symbol: "-", popup: [OfflineUpperc, OfflineSymc, OfflineLowerc]}
+      - {click: v, long_click: paste_clip, swipe_down: paste, key_back_color: bh3, key_text_color: th3, swipe_up: OfflineSymv, label_symbol: "_", popup: [OfflineUpperv, OfflineSymv, OfflineLowerv]}
+      - {click: b, long_click: ";", swipe_down: "\\", key_back_color: bh3, key_text_color: th3, swipe_up: OfflineSymb, label_symbol: ":", popup: [OfflineUpperb, OfflineSymb, OfflineLowerb]}
+      - {click: n, long_click: ":", key_back_color: bh3, key_text_color: th3, swipe_up: OfflineSymn, label_symbol: ";", popup: [OfflineUppern, OfflineSymn, OfflineLowern]}
+      - {click: m, long_click: '?', swipe_down: "|", key_back_color: bh3, key_text_color: th3, swipe_up: OfflineSymm, label_symbol: "?", popup: [OfflineUpperm, OfflineSymm, OfflineLowerm]}
       - {click: BackSpace, swipe_up: OfflineClear, width: 15, key_back_color: bbs, key_text_color: tbs}
 
       - {click: Keyboard_number, long_click: Menu, width: 12.5, key_back_color: bgn, key_text_color: tgn}
@@ -4239,3 +4239,55 @@ preset_keys:
   标点: {text: '{Escape}/bd', label: 标点, functional: false}
   偏旁: {text: '{Escape}/pp', label: 偏旁, functional: false}
   竖标点: {text: '{Escape}/bdz', label: 竖标, functional: false}
+  OfflineUppera: {label: "A", commit: "A"}
+  OfflineLowera: {label: "a", commit: "a"}
+  OfflineUpperb: {label: "B", commit: "B"}
+  OfflineLowerb: {label: "b", commit: "b"}
+  OfflineUpperc: {label: "C", commit: "C"}
+  OfflineLowerc: {label: "c", commit: "c"}
+  OfflineUpperd: {label: "D", commit: "D"}
+  OfflineLowerd: {label: "d", commit: "d"}
+  OfflineUppere: {label: "E", commit: "E"}
+  OfflineLowere: {label: "e", commit: "e"}
+  OfflineUpperf: {label: "F", commit: "F"}
+  OfflineLowerf: {label: "f", commit: "f"}
+  OfflineUpperg: {label: "G", commit: "G"}
+  OfflineLowerg: {label: "g", commit: "g"}
+  OfflineUpperh: {label: "H", commit: "H"}
+  OfflineLowerh: {label: "h", commit: "h"}
+  OfflineUpperi: {label: "I", commit: "I"}
+  OfflineLoweri: {label: "i", commit: "i"}
+  OfflineUpperj: {label: "J", commit: "J"}
+  OfflineLowerj: {label: "j", commit: "j"}
+  OfflineUpperk: {label: "K", commit: "K"}
+  OfflineLowerk: {label: "k", commit: "k"}
+  OfflineUpperl: {label: "L", commit: "L"}
+  OfflineLowerl: {label: "l", commit: "l"}
+  OfflineUpperm: {label: "M", commit: "M"}
+  OfflineLowerm: {label: "m", commit: "m"}
+  OfflineUppern: {label: "N", commit: "N"}
+  OfflineLowern: {label: "n", commit: "n"}
+  OfflineUppero: {label: "O", commit: "O"}
+  OfflineLowero: {label: "o", commit: "o"}
+  OfflineUpperp: {label: "P", commit: "P"}
+  OfflineLowerp: {label: "p", commit: "p"}
+  OfflineUpperq: {label: "Q", commit: "Q"}
+  OfflineLowerq: {label: "q", commit: "q"}
+  OfflineUpperr: {label: "R", commit: "R"}
+  OfflineLowerr: {label: "r", commit: "r"}
+  OfflineUppers: {label: "S", commit: "S"}
+  OfflineLowers: {label: "s", commit: "s"}
+  OfflineUppert: {label: "T", commit: "T"}
+  OfflineLowert: {label: "t", commit: "t"}
+  OfflineUpperu: {label: "U", commit: "U"}
+  OfflineLoweru: {label: "u", commit: "u"}
+  OfflineUpperv: {label: "V", commit: "V"}
+  OfflineLowerv: {label: "v", commit: "v"}
+  OfflineUpperw: {label: "W", commit: "W"}
+  OfflineLowerw: {label: "w", commit: "w"}
+  OfflineUpperx: {label: "X", commit: "X"}
+  OfflineLowerx: {label: "x", commit: "x"}
+  OfflineUppery: {label: "Y", commit: "Y"}
+  OfflineLowery: {label: "y", commit: "y"}
+  OfflineUpperz: {label: "Z", commit: "Z"}
+  OfflineLowerz: {label: "z", commit: "z"}
