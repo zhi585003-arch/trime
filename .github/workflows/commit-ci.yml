@@ -48,8 +48,19 @@ jobs:
       - name: Preserve personal debug signing key
         uses: actions/cache@v5
         with:
-          path: ~/.android/debug.keystore
-          key: trime-offline-debug-signing-v1
+          path: ~/trime-signing/debug.keystore
+          key: trime-offline-debug-signing-v2
+
+      - name: Ensure explicit debug signing key
+        shell: bash
+        run: |
+          mkdir -p "$HOME/trime-signing"
+          if [ ! -f "$HOME/trime-signing/debug.keystore" ]; then
+            keytool -genkeypair -keystore "$HOME/trime-signing/debug.keystore" \
+              -storepass android -keypass android -alias androiddebugkey \
+              -dname "CN=Android Debug,O=Android,C=US" -keyalg RSA -keysize 2048 -validity 10000
+          fi
+          echo "TRIME_DEBUG_KEYSTORE=$HOME/trime-signing/debug.keystore" >> "$GITHUB_ENV"
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3

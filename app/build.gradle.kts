@@ -25,7 +25,7 @@ android {
     buildToolsVersion = "35.0.0"
 
     defaultConfig {
-        applicationId = "com.osfans.trime.offline"
+        applicationId = "com.osfans.trime.offline.v2"
         minSdk = 21
         targetSdk = 35
         versionCode = 20260302
@@ -42,6 +42,10 @@ android {
     base {
         // https://www.norio.be/blog/archivesBaseName-removed-from-gradle9.html
         archivesName = "${android.defaultConfig.applicationId}-$buildVersionName"
+    }
+
+    System.getenv("TRIME_DEBUG_KEYSTORE")?.let { path ->
+        signingConfigs.getByName("debug") { storeFile = file(path) }
     }
 
     buildTypes {
@@ -67,7 +71,7 @@ android {
         debug {
             applicationIdSuffix = ".debug"
 
-            resValue("string", "trime_app_name", "同文离线雾凇")
+            resValue("string", "trime_app_name", "同文离线雾凇二版")
         }
         all {
             // remove META-INF/version-control-info.textproto
