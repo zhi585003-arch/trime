@@ -19,9 +19,12 @@ class ThemePrefs(
         string(
             R.string.selected_theme,
             SELECTED_THEME,
-            "tongwenfeng",
+            "tongwenfeng.trime",
             R.string.selected_theme_summary,
-        )
+        ).apply {
+            // Repair the invalid ID used by the first offline build.
+            if (getValue() == "tongwenfeng") setValue("tongwenfeng.trime")
+        }
 
     val normalModeColor =
         string(
@@ -71,3 +74,4 @@ class ThemePrefs(
         const val NAVBAR_BACKGROUND = "navbar_background"
     }
 }
+
