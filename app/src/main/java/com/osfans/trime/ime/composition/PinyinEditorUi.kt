@@ -21,7 +21,7 @@ import splitties.dimensions.dp
 import kotlin.math.abs
 
 /** A normal child of the IME, including its touchable insets; no floating touch window. */
-class PinyinEditorUi(context: Context) {
+class PinyinEditorUi(private val context: Context) {
     var onPosition: (String, Int) -> Unit = { _, _ -> }
     var onStep: (String, Int) -> Unit = { _, _ -> }
     private var input = ""
