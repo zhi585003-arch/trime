@@ -88,6 +88,9 @@ jobs:
             -PbuildABI=arm64-v8a \
             --max-workers=4 --console=plain --stacktrace 2>&1 | tee build.log
 
+      - name: Test pinyin prefix selection
+        run: ./gradlew :app:testDebugUnitTest --tests "*PinyinChoicesTest" -PbuildABI=arm64-v8a --max-workers=4 --console=plain
+
       - name: Verify offline APK and bundled data
         shell: bash
         run: |
@@ -111,6 +114,7 @@ jobs:
           name: offline-build-logs
           path: |
             build.log
+            app/build/reports/tests/testDebugUnitTest/**
             apk-verification.txt
             app/build/intermediates/cxx/**/logs/**
           if-no-files-found: ignore

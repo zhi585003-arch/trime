@@ -139,6 +139,19 @@ class Rime :
         changeRimeCandidatePage(backward).also { emitResponse() }
     }
 
+    override suspend fun inputContext(): ContextProto = withRimeContext { getRimeContext() }
+
+    override suspend fun selectPinyinPrefix(expectedInput: String, expectedPreedit: String?, position: Int): Boolean = withRimeContext {
+        val context = getRimeContext()
+        if (context.input != expectedInput || context.composition.preedit != expectedPreedit || position !in 1..context.input.length) {
+            false
+        } else {
+            setRimeCaretPos(position)
+            emitResponse()
+            true
+        }
+    }
+
     override suspend fun rawInput(): String = withRimeContext { getRimeRawInput() }
 
     override suspend fun moveCursorPos(position: Int) = withRimeContext {

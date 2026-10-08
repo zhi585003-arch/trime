@@ -70,13 +70,12 @@ abstract class BaseUnrolledCandidateWindow :
                     itemAnimator = null
                 }
             }
-        candidateLayout.onSyllable = { length ->
-            service.lifecycleScope.launch {
-                val raw = rime.runOnReady { rawInput() }
-                val pending = pendingPinyin(rime.run { compositionCached })
-                if (pending.isNotEmpty() && raw.endsWith(pending)) {
-                    rime.runOnReady { moveCursorPos(raw.length - pending.length + length) }
-                }
+        candidateLayout.onSyllable = { index ->
+            val context = syllableContext
+            val choice = syllableChoices.getOrNull(index)
+            if (context != null && choice != null) service.lifecycleScope.launch {
+                rime.runOnReady { selectPinyinPrefix(context.input, context.composition.preedit, choice.caret) }
+                refreshSyllables()
             }
         }
         candidateLayout.onReturn = { windowManager.attachWindow(KeyboardWindow) }
@@ -108,7 +107,7 @@ abstract class BaseUnrolledCandidateWindow :
 
     override fun onAttached() {
         lifecycleCoroutineScope = candidateLayout.findViewTreeLifecycleOwner()!!.lifecycleScope
-        showSyllables(rime.run { compositionCached })
+        refreshSyllables()
         bar.unrollButtonStateMachine.push(UnrollButtonStateMachine.TransitionEvent.UnrolledCandidatesAttached)
         offsetJob =
             lifecycleCoroutineScope.launch {
@@ -144,19 +143,26 @@ abstract class BaseUnrolledCandidateWindow :
         }
     }
 
-    private fun pendingPinyin(data: com.osfans.trime.core.CompositionProto): String =
-        Regex("[a-zA-Züv' ]+$").find(data.preedit.orEmpty())?.value?.replace(" ", "")?.lowercase().orEmpty()
-
+    private var syllableJob: Job? = null
+    private var syllableContext: com.osfans.trime.core.ContextProto? = null
+    private var syllableChoices = emptyList<com.osfans.trime.ime.candidates.unrolled.PinyinChoices.Choice>()
     private val syllables by lazy {
         service.assets.open("pinyin-syllables.txt").bufferedReader().use { it.readLines().toSet() }
     }
-    private fun showSyllables(data: com.osfans.trime.core.CompositionProto) {
-        val pending = pendingPinyin(data).substringBefore("'")
-        val choices = (1..pending.length).map { pending.take(it) }.filter { it in syllables }
-        candidateLayout.setSyllables(choices.ifEmpty { listOfNotNull(pending.takeIf { it.isNotBlank() }) })
+    private fun refreshSyllables() {
+        syllableJob?.cancel()
+        syllableJob = lifecycleCoroutineScope.launch {
+            val context = rime.runOnReady { inputContext() }
+            val choices = com.osfans.trime.ime.candidates.unrolled.PinyinChoices.from(context, syllables)
+            syllableContext = context
+            syllableChoices = choices
+            candidateLayout.setSyllables(choices.map { it.label })
+        }
     }
     override fun onCompositionUpdate(data: com.osfans.trime.core.CompositionProto) {
-        showSyllables(data)
+        // Inline-preedit mode intentionally sends an empty display composition.
+        // Query the actual engine context rather than parsing this UI message.
+        if (::lifecycleCoroutineScope.isInitialized) refreshSyllables()
     }
 
     override fun onDetached() {
@@ -165,6 +171,9 @@ abstract class BaseUnrolledCandidateWindow :
             UnrollButtonStateMachine.BooleanKey.UnrolledCandidatesEmpty to
                 (compactCandidate.adapter.total == adapter.offset),
         )
+        syllableJob?.cancel()
+        syllableContext = null
+        syllableChoices = emptyList()
         offsetJob?.cancel()
         candidatesSubmitJob?.cancel()
     }

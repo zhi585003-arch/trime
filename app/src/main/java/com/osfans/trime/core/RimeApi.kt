@@ -50,6 +50,10 @@ interface RimeApi {
 
     suspend fun changeCandidatePage(backward: Boolean): Boolean
 
+    suspend fun inputContext(): ContextProto
+
+    suspend fun selectPinyinPrefix(expectedInput: String, expectedPreedit: String?, position: Int): Boolean
+
     suspend fun rawInput(): String
 
     suspend fun moveCursorPos(position: Int)

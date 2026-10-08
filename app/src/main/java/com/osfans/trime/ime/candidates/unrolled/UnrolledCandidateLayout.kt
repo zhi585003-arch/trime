@@ -31,12 +31,12 @@ class UnrolledCandidateLayout(context: Context, theme: Theme) : LinearLayout(con
     }
     fun setSyllables(choices: List<String>) {
         syllableList.removeAllViews()
-        choices.forEach { syllable ->
+        choices.forEachIndexed { index, syllable ->
             syllableList.addView(Button(context).apply {
                 text = syllable
                 isAllCaps = false
                 gravity = Gravity.CENTER
-                setOnClickListener { onSyllable(syllable.length) }
+                setOnClickListener { onSyllable(index) }
             }, LayoutParams(LayoutParams.MATCH_PARENT, dp(56)))
         }
     }
