@@ -46,7 +46,8 @@ class Key(
     private val label = selfConfig?.label ?: ""
     private val labelSymbol = selfConfig?.labelSymbol ?: ""
     val hint: String = selfConfig?.hint ?: ""
-    val popup = selfConfig?.popup ?: emptyList()
+    val popup = selfConfig?.popup?.takeIf { it.isNotEmpty() }
+        ?: OfflineLetterOptions.popup(selfConfig?.click.orEmpty())
 
     val keyTextSize: Float = selfConfig?.keyTextSize ?: 0f
     val symbolTextSize: Float = selfConfig?.symbolTextSize ?: 0f

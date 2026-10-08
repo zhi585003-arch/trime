@@ -19,3 +19,9 @@ for layout in ['default', 'letter']:
 syllables = (root / 'app/src/main/assets/pinyin-syllables.txt').read_text().splitlines()
 assert {'xi', 'xian', 'an'}.issubset(syllables)
 print('PASS: valid default theme, 52 letter gestures, brackets, clear gesture, syllable inventory')
+
+# Candidate panel must use a color available in the bundled theme.
+panel = (root / "app/src/main/java/com/osfans/trime/ime/candidates/unrolled/UnrolledCandidateLayout.kt").read_text()
+assert 'getColor("candidate_back_color")' not in panel
+assert 'getColor("back_color")' in panel
+print("PASS: candidate panel uses supported background color")

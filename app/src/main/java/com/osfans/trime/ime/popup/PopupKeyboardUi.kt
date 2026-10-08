@@ -261,6 +261,23 @@ class PopupKeyboardUi(
     }
 
     override fun onChangeFocus(x: Float, y: Float): Boolean {
+        if (letterPicker) {
+            // The finger stays on the original key, well below the popup. Select
+            // horizontally; do not mistake that normal vertical gap for cancellation.
+            val minY = -keyHeight.toFloat()
+            val maxY = triggerBounds.height() - offsetY + keyHeight.toFloat()
+            if (y < minY || y > maxY || x < -keyWidth || x > (columnCount + 1) * keyWidth) {
+                onDismissSelf(this)
+                return true
+            }
+            val index = floor(x / keyWidth).toInt().coerceIn(0, columnCount - 1)
+            if (index != focusedIndex) {
+                markInactive(focusedIndex)
+                markFocus(index)
+                focusedIndex = index
+            }
+            return false
+        }
         // move to next row when gesture moves above 30% from bottom of current row
         var newRow = rowCount - (y / keyHeight - 0.2).roundToInt()
         // move to next column when gesture moves out of current column

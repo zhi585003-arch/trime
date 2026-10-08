@@ -19,7 +19,7 @@ class UnrolledCandidateLayout(context: Context, theme: Theme) : LinearLayout(con
     init {
         id = R.id.unrolled_candidate_view
         orientation = HORIZONTAL
-        setBackgroundColor(ColorManager.getColor("candidate_back_color"))
+        setBackgroundColor(ColorManager.getColor("back_color"))
         val side = LinearLayout(context).apply { orientation = VERTICAL }
         side.addView(ScrollView(context).apply { addView(syllableList) }, LayoutParams(LayoutParams.MATCH_PARENT, 0, 1f))
         side.addView(Button(context).apply {

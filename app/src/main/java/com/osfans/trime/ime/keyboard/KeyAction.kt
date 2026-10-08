@@ -129,7 +129,12 @@ class KeyAction(
     init {
         val unbraced = raw.removeSurrounding("{", "}")
         val presetKey = ThemeManager.activeTheme.presetKeys[unbraced]
+        val offlineLiteral = OfflineLetterOptions.literal(unbraced)
         when {
+            offlineLiteral != null -> {
+                commit = offlineLiteral
+                label = offlineLiteral
+            }
             // match like: { x: BackSpace } -> preset_keys/BackSpace: {..., send: BackSpace }
             presetKey != null -> {
                 command = presetKey.command

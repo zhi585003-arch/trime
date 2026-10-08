@@ -111,14 +111,23 @@ open class KeyboardGestureFrame(context: Context) : FrameLayout(context) {
                     state.currentX = x
                     state.currentY = y
 
+                    // Popup selection is independent of the swipe-to-type preference.
+                    if (state.isLongPressed) {
+                        onPopupChangeFocus?.invoke(keyIndex, x, y)
+                        continue
+                    }
+
                     if (!swipeEnabled) {
                         val currentKeyIndex = getKeyIndex(x, y)
                         if (currentKeyIndex != -1 && currentKeyIndex != state.keyIndex) {
                             activateKeyFeedback(currentKeyIndex)
                             deactivateKeyFeedback(state.keyIndex)
                             state.keyIndex = currentKeyIndex
+                            state.longPressJob?.cancel()
+                            if (hasAction(currentKeyIndex, KeyBehavior.LONG_CLICK) || hasPopupKeys(currentKeyIndex)) {
+                                launchLongPressJob(pointerId, state)
+                            }
                         }
-                        state.longPressJob?.cancel()
                         continue
                     }
 
