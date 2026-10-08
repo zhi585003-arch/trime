@@ -191,13 +191,17 @@ class CommonKeyboardActionListener {
                     "liquid_keyboard" -> handleLiquidKeyboard(arg)
                     "menu_keyboard" -> windowManager.attachWindow(SwitchOptionWindow())
                     "offline_clear_field" -> {
-                        service.postRimeJob { clearComposition() }
-                        service.currentInputConnection?.let { ic ->
-                            ic.beginBatchEdit()
-                            try {
-                                ic.finishComposingText()
-                                if (ic.performContextMenuAction(android.R.id.selectAll)) ic.commitText("", 1)
-                            } finally { ic.endBatchEdit() }
+                        service.postRimeJob {
+                            clearComposition()
+                            kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Main.immediate) {
+                                service.currentInputConnection?.let { ic ->
+                                    ic.beginBatchEdit()
+                                    try {
+                                        ic.finishComposingText()
+                                        if (ic.performContextMenuAction(android.R.id.selectAll)) ic.commitText("", 1)
+                                    } finally { ic.endBatchEdit() }
+                                }
+                            }
                         }
                     }
                     "clipboard_window" -> windowManager.attachWindow(ClipboardWindow())

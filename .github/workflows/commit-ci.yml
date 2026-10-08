@@ -34,7 +34,9 @@ jobs:
         run: python3 script/prepare-offline-data.py .rime-ice
 
       - name: Check clipboard database rules
-        run: python3 script/test-offline-clipboard.py
+        run: |
+          python3 script/test-offline-clipboard.py
+          python3 script/check-offline-ui.py
 
       - name: Setup Java 17
         uses: actions/setup-java@v5

@@ -176,9 +176,13 @@ class OfflineSettingsFragment : PreferenceFragmentCompat() {
         action(files, "恢复上次导入前的配置") {
             val name = File(PrivateData.metadata, "last-name")
             val backup = File(PrivateData.metadata, "last-config")
-            if (!name.exists() || !backup.exists()) toast("暂无旧配置备份") else confirm("恢复上次导入前的配置并重新部署？") {
-                backup.copyTo(File(PrivateData.metadata, "pending-config"), overwrite = true)
-                name.copyTo(File(PrivateData.metadata, "pending-name"), overwrite = true)
+            if (!name.exists()) toast("暂无旧配置备份") else confirm("恢复上次导入前的配置并重新部署？") {
+                if (backup.exists()) {
+                    backup.copyTo(File(PrivateData.metadata, "pending-config"), overwrite = true)
+                    name.copyTo(File(PrivateData.metadata, "pending-name"), overwrite = true)
+                } else {
+                    File(PrivateData.metadata, "pending-remove").writeText(name.readText())
+                }
                 RimeDaemon.restartRime(true)
             }
         }

@@ -67,6 +67,14 @@ object PrivateData {
             }
             prefs.edit().putBoolean("offline_clear_learning", false).commit()
         }
+        val removal = File(metadata, "pending-remove")
+        if (removal.exists()) {
+            val name = removal.readText()
+            check(File(name).name == name && name.isNotBlank())
+            val target = File(userDir, name)
+            check(!target.exists() || target.delete())
+            removal.delete()
+        }
         val staged = File(metadata, "pending-config")
         val nameFile = File(metadata, "pending-name")
         if (staged.exists() && nameFile.exists()) {

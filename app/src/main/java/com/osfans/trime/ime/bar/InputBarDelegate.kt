@@ -76,16 +76,18 @@ class InputBarDelegate : InputBroadcastReceiver {
 
     private var clipboardTimeoutJob: Job? = null
 
+    private var displayedClipboardId: Int? = null
     private var isClipboardFresh: Boolean = false
     private var isInlineSuggestionPresent: Boolean = false
 
     @Keep
-    private val onClipboardUpdateListener = ClipboardHelper.OnClipboardUpdateListener {
+    private val onClipboardUpdateListener: ClipboardHelper.OnClipboardUpdateListener = ClipboardHelper.OnClipboardUpdateListener {
         // Explicit clipboard previews remain available even with automatic suggestions disabled.
         service.lifecycleScope.launch {
             if (it.text.isNullOrEmpty()) {
                 isClipboardFresh = false
             } else {
+                displayedClipboardId = it.id
                 alwaysUi.clipboardUi.text.text = it.text.take(42)
                 isClipboardFresh = true
                 launchClipboardTimeoutJob()
@@ -139,7 +141,7 @@ class InputBarDelegate : InputBroadcastReceiver {
             }
             clipboardUi.suggestionView.apply {
                 setOnClickListener {
-                    val id = ClipboardHelper.lastBean?.id
+                    val id = displayedClipboardId
                     if (id != null) {
                         service.lifecycleScope.launch {
                             if (ClipboardHelper.paste(id, service::commitText)) service.postRimeJob { clearComposition() }
@@ -246,7 +248,7 @@ class InputBarDelegate : InputBroadcastReceiver {
         view.displayedChild = index
     }
 
-    val view by lazy {
+    val view: ViewAnimator by lazy {
         ViewAnimator(context).apply {
             visibility =
                 if (hideQuickBar) {
