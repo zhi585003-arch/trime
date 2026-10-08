@@ -8,7 +8,9 @@ internal object PinyinChoices {
     fun from(context: ContextProto, syllables: Set<String>): List<Choice> {
         val raw = context.input
         if (raw.isEmpty()) return emptyList()
-        val preedit = context.composition.preedit.orEmpty()
+        // librime Context::GetSoftCursor inserts U+2038 into preedit text.
+        // It may sit at the end (xian‸) or inside it (xi‸an). It is not input.
+        val preedit = context.composition.preedit.orEmpty().replace("\u2038", "")
         val suffix = Regex("[a-zA-Züv' ]+$").find(preedit)?.value
             ?.replace(" ", "")?.lowercase().orEmpty()
         if (suffix.isEmpty() || !raw.lowercase().endsWith(suffix)) return emptyList()

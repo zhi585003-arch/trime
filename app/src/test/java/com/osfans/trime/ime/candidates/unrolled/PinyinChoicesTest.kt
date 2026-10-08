@@ -28,4 +28,16 @@ class PinyinChoicesTest {
     @Test fun emptyCompositionClearsChoices() {
         assertEquals(emptyList<PinyinChoices.Choice>(), PinyinChoices.from(ContextProto(), inventory))
     }
+    @Test fun actualRimeSoftCursorAtEndDoesNotHideChoices() {
+        assertEquals(listOf("xi" to 2, "xia" to 3, "xian" to 4), choices("xian", "xian\u2038"))
+    }
+    @Test fun softCursorBetweenSyllablesDoesNotDiscardFirstSyllable() {
+        assertEquals(listOf("xi" to 2, "xia" to 3, "xian" to 4), choices("xian", "xi\u2038an"))
+    }
+    @Test fun confirmedWordWithSoftCursorLeavesAn() {
+        assertEquals(listOf("an" to 4), choices("xian", "西an\u2038"))
+    }
+    @Test fun softCursorAfterConfirmedWordDoesNotChangeRawOffset() {
+        assertEquals(listOf("an" to 4), choices("xian", "西\u2038an"))
+    }
 }
